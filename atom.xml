@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
-  <updated>2015-08-03T15:13:03.000Z</updated>
+  <updated>2015-08-08T00:01:32.000Z</updated>
   <id>http://www.flydream.org//</id>
   
   <author>
@@ -14,6 +14,44 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[PHP 内核分析 -- 变量分析]]></title>
+    <link href="http://www.flydream.org/2015/08/08/variableAnalysie/"/>
+    <id>http://www.flydream.org/2015/08/08/variableAnalysie/</id>
+    <published>2015-08-07T22:36:05.000Z</published>
+    <updated>2015-08-08T00:01:32.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="弱变量_ZVAL_HashTable"><strong>弱变量</strong>  <strong>ZVAL</strong>  <strong>HashTable</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
+<h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变量存储结构ZVAL(Zend/zend.h)如下：</p>
+<pre><code>struct _zval_struct{
+    /<span class="keyword">*</span>变量信息<span class="keyword">*</span>/
+    zvalue_value value; /<span class="keyword">*</span>存储变量的值<span class="keyword">*</span>/
+    zend_uint refcount__gc; /<span class="keyword">*</span>引用次数<span class="keyword">*</span>/
+    zend_uchar type     /<span class="keyword">*</span>变量的类型<span class="keyword">*</span>/
+    zend_uchar is_ref__gc;  /<span class="keyword">*</span>是否引用<span class="keyword">*</span>/
+}zval;
+</code></pre><p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
+<h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)是变量值实际存储的地方，zvalue_value 的结果如下：</p>
+<pre><code>typedef union _zvalue_value{
+    long lval<span class="comment">;</span>
+    double dval<span class="comment">;</span>
+    struct{
+        char *val<span class="comment">;</span>
+        int len<span class="comment">;</span>
+    } str<span class="comment">;</span>
+    HashTable *ht<span class="comment">;</span>
+    zend_object_value obj<span class="comment">;</span>
+    zend_ast *ast<span class="comment">;</span>
+}zvalue_value<span class="comment">;</span>
+</code></pre>]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="弱变量_ZVAL_HashTable"><strong>弱变量</strong>  <strong>ZVAL</strong>  <strong>HashTable</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
+<h4]]>
+    </summary>
+    
+      <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Hello World]]></title>
