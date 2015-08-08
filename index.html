@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a>
+						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a>
 					</div>
 				</section>
 				
@@ -192,6 +192,61 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-varlifttime" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/08/varlifttime/" class="article-date">
+  	<time datetime="2015-08-08T08:44:32.000Z" itemprop="datePublished">2015-08-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/08/varlifttime/">PHP 内核学习 -- 变量的作用域和生命周期</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="作用域_生命周期"><strong>作用域</strong> <strong>生命周期</strong></h3><p>变量</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP内核-变量-作用域-生命周期/">PHP内核 变量 作用域 生命周期</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
     <article id="post-variableAnalysie" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -209,7 +264,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/08/variableAnalysie/">PHP 内核分析 -- 变量分析</a>
+      <a class="article-title" href="/2015/08/08/variableAnalysie/">PHP 内核学习 -- 变量的结构和类型</a>
     </h1>
   
 
@@ -228,19 +283,26 @@
     zend_uchar is_ref__gc;  /<span class="keyword">*</span>是否引用<span class="keyword">*</span>/
 }zval;
 </code></pre><p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
-<h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)是变量值实际存储的地方，zvalue_value 的结果如下：</p>
-<pre><code>typedef union _zvalue_value{
-    long lval<span class="comment">;</span>
-    double dval<span class="comment">;</span>
-    struct{
-        char *val<span class="comment">;</span>
-        int len<span class="comment">;</span>
-    } str<span class="comment">;</span>
-    HashTable *ht<span class="comment">;</span>
-    zend_object_value obj<span class="comment">;</span>
-    zend_ast *ast<span class="comment">;</span>
-}zvalue_value<span class="comment">;</span>
-</code></pre>
+<h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)就是变量值实际存储的地方，zvalue_value 的结果如下：</p>
+<pre><code><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value{
+    <span class="keyword">long</span> lval;
+    <span class="keyword">double</span> dval;
+    <span class="keyword">struct</span>{
+        <span class="keyword">char</span> *val;
+        <span class="keyword">int</span> len;
+    } str;         <span class="comment">/*字符串*/</span>
+    HashTable *ht;    <span class="comment">/*数组*/</span>
+    zend_object_value obj;  <span class="comment">/*对象*/</span>
+    zend_ast *ast;    <span class="comment">/*抽象语法树*/</span>
+}zvalue_value;
+</code></pre><p>由于一个变量只能是一种类型,所以变量实际存储的结构zvalue_value,采用联合体的结构，这样可以避免浪费大量内存。<br>zvalue_value 中各个成员负责存储不同的变量，整型和布尔值在存储在zvalue_value.lval；dval存储浮点数； str存储字符串；ht 负责存储数组； obj和ast分别存储对象和语法树。</p>
+<h4 id="-array（数组）">.array（数组）</h4><p>数组在PHP是一种很强大的变量，因为PHP为数组提供了丰富的内置函数，同时还可以存储其它类型的变量。PHP数组的强大依赖于哈希表，一种高效的键值对存储结构。在PHP中，处处可见哈希表的存在，从变量的作用域到函数表(active_table)和对象等。</p>
+<h4 id="Object（对象）">Object（对象）</h4><pre><code>typedef struct <span class="number">_</span>zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span><span class="keyword">value</span>{
+    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handle handle;  <span class="comment">//对象在对象池中的索引</span>
+    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handlers *handlers;
+}
+</code></pre><p>EG宏，一个全局结构体用于保存在运行时的数据。 PHP的对象只有在运行时才会被创建，其中就包括了用来保存所有被创建的对象的对象池EG(objects_store)，而handle域就是当前对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。 这个结构体及对象相关的类的结构_zend_class_entry。</p>
+
       
     </div>
     
