@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a>
+						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a>
 					</div>
 				</section>
 				
@@ -191,6 +191,121 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-hashtable" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/11/hashtable/" class="article-date">
+  	<time datetime="2015-08-10T22:21:38.000Z" itemprop="datePublished">2015-08-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/11/hashtable/">new hashtable in php 7</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
+<p>本质上讲，PHP的数组就是一个有序的词典，一个有序的键/值对列表，而这种key/value的映射关系是通过hashtable来实现的。</p>
+<p>hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到两个相同的值，所以hashtable的实现还要解决哈希冲突。</p>
+<p>哈希冲突的基本解决办法有两种：一种是开放地址，另一种是链式法；PHP中使用了第二种，下面直接描述PHP中的hashtable是如何实现的，新一代PHP引擎的hashtable有什么不同，为什么更高效？</p>
+<h4 id="hashtable在PHP中5的实现">hashtable在PHP中5的实现</h4><p>下图是php5中hashtable实现的简述：<br><img src="http://chuantu.biz/t2/11/1439250546x-1566638931.png" alt="Hashtable png"></p>
+<p>如上图，a,b,c这些键值所对应的值存在“bucket”结构中，每一个bucket都是独立分配空间的，而buckets组成互相之间独立的链表来解决哈希冲突。<br>另外除此之外，还有一个链表来保存元素的顺序（如：数组中的元素顺序是它的插入顺序），数组键值“a”,“b”，“c”，它对应的链表就应该是下面这个样子：<br><img src="http://chuantu.biz/t2/11/1439250599x-1566638931.png" alt="Hashtable2 png"><br>这中hashtable实现在内存使用和执行低效的原因有以下几个原因：</p>
+<ol>
+<li>bucket 要独立分配。每次分配都要额外占用内存。同时独立分配就意味着bucket的地址相对分散，影响缓存效率。</li>
+<li>zvals 也要单独分配而且 每一个bucket要保存同一个zval的指针。<h5 id="hashtable在PHP7中的实现">hashtable在PHP7中的实现</h5>在介绍新的hahstable之前，先来看一下新的zval结构：</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   <span class="keyword">struct</span> _zval_struct &#123;    </span><br><span class="line">	zend_value value;</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">struct</span> &#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_4(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar type_flags,</span><br><span class="line">				zend_uchar const_flags,</span><br><span class="line">				zend_uchar reserved)</span><br><span class="line">			&#125; v;</span><br><span class="line">		<span class="keyword">uint32_t</span> type_info;</span><br><span class="line">	&#125; u1;</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">uint32_t</span> var_flags;</span><br><span class="line">		<span class="keyword">uint32_t</span> next;       <span class="comment">/* hash collision chain */</span></span><br><span class="line">		<span class="keyword">uint32_t</span> cache_slot; <span class="comment">/* literal cache slot */</span></span><br><span class="line">		<span class="keyword">uint32_t</span> lineno;     <span class="comment">/* line number (for ast nodes) */</span></span><br><span class="line">	&#125; u2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php7-hashtable/">php7 hashtable</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-php7-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/09/php7-1/" class="article-date">
+  	<time datetime="2015-08-09T13:03:49.000Z" itemprop="datePublished">2015-08-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/08/09/php7-1/">php7_1</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-varlifttime" class="article article-type-post" itemscope itemprop="blogPost">
   
