@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
-  <updated>2015-08-10T23:50:31.000Z</updated>
+  <updated>2015-08-11T23:51:16.000Z</updated>
   <id>http://www.flydream.org//</id>
   
   <author>
@@ -16,22 +16,42 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[new hashtable in php 7]]></title>
+    <title><![CDATA[PHP内核学习 -- new hashtable in php 7]]></title>
     <link href="http://www.flydream.org/2015/08/11/hashtable/"/>
     <id>http://www.flydream.org/2015/08/11/hashtable/</id>
     <published>2015-08-10T22:21:38.000Z</published>
-    <updated>2015-08-10T23:50:31.000Z</updated>
+    <updated>2015-08-11T23:51:16.000Z</updated>
     <content type="html"><![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
 <p>本质上讲，PHP的数组就是一个有序的词典，一个有序的键/值对列表，而这种key/value的映射关系是通过hashtable来实现的。</p>
 <p>hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到两个相同的值，所以hashtable的实现还要解决哈希冲突。</p>
 <p>哈希冲突的基本解决办法有两种：一种是开放地址，另一种是链式法；PHP中使用了第二种，下面直接描述PHP中的hashtable是如何实现的，新一代PHP引擎的hashtable有什么不同，为什么更高效？</p>
 <h4 id="hashtable在PHP中5的实现">hashtable在PHP中5的实现</h4><p>下图是php5中hashtable实现的简述：<br><img src="http://chuantu.biz/t2/11/1439250546x-1566638931.png" alt="Hashtable png"></p>
-<p>如上图，a,b,c这些键值所对应的值存在“bucket”结构中，每一个bucket都是独立分配空间的，而buckets组成互相之间独立的链表来解决哈希冲突。<br>另外除此之外，还有一个链表来保存元素的顺序（如：数组中的元素顺序是它的插入顺序），数组键值“a”,“b”，“c”，它对应的链表就应该是下面这个样子：<br><img src="http://chuantu.biz/t2/11/1439250599x-1566638931.png" alt="Hashtable2 png"><br>这中hashtable实现在内存使用和执行低效的原因有以下几个原因：</p>
+<p>如上图，a,b,c这些键值所对应的值存在“bucket”结构中，每一个bucket都是独立分配空间的，而buckets组成互相之间独立的链表来解决哈希冲突。<br>另外除此之外，还有一个链表来保存元素的顺序（如：数组中的元素顺序是它的插入顺序），数组键值“a”,“b”，“c”，它对应的链表就应该是下面这个样子：<br><img src="http://chuantu.biz/t2/11/1439332151x-954497701.png" alt="Hashtable2 png"><br>这中hashtable实现在内存使用和执行低效的原因有以下几个原因：</p>
 <ol>
 <li>bucket 要独立分配。每次分配都要额外占用内存。同时独立分配就意味着bucket的地址相对分散，影响缓存效率。</li>
-<li>zvals 也要单独分配而且 每一个bucket要保存同一个zval的指针。<h5 id="hashtable在PHP7中的实现">hashtable在PHP7中的实现</h5>在介绍新的hahstable之前，先来看一下新的zval结构：</li>
+<li>zvals 也要单独分配而且 每一个bucket要保存同一个zval的指针。<h4 id="zval在PHP7中的实现">zval在PHP7中的实现</h4>在介绍新的hahstable之前，先来看一下新的zval结构：</li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   <span class="keyword">struct</span> _zval_struct &#123;    </span><br><span class="line">	zend_value value;</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">struct</span> &#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_4(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar type_flags,</span><br><span class="line">				zend_uchar const_flags,</span><br><span class="line">				zend_uchar reserved)</span><br><span class="line">			&#125; v;</span><br><span class="line">		<span class="keyword">uint32_t</span> type_info;</span><br><span class="line">	&#125; u1;</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">uint32_t</span> var_flags;</span><br><span class="line">		<span class="keyword">uint32_t</span> next;       <span class="comment">/* hash collision chain */</span></span><br><span class="line">		<span class="keyword">uint32_t</span> cache_slot; <span class="comment">/* literal cache slot */</span></span><br><span class="line">		<span class="keyword">uint32_t</span> lineno;     <span class="comment">/* line number (for ast nodes) */</span></span><br><span class="line">	&#125; u2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个zval结构有三部分组成，第一部分zend_value 负责存储实际的变量值；第二部分的type_info 代表变量的类型，从而决定第一部分的实际存储的值；第三部分不得经常使用到。在特殊的上下文下 存储一些特别的信息，比如：抽象语法树用它来存储行号，VM constants 用它来存储缓存索引，以及hashtable中存储哈希碰撞是之下链表的下一个元素。</p>
+<p>新旧zval之间的明显区别就是新的zval实现中不再有引用字段。原因就是zvals不再独立申请分配。而是嵌入到了存储它的结构中，比如hashtable。</p>
+<p>虽然    zval自身不再包含引用字段，但是像string，array，object和resouce等类型的值依然在使用引用字段。这样做的优势：<br>   1.Zvals storing simple values (like booleans, integers or floats) no longer require any allocations. So this saves the allocation header overhead and improves performance by avoiding unnecessary allocs and frees and improving cache locality.</p>
+<p>   2.Zvals storing simple values don’t need to store a refcount and GC root buffer.   </p>
+<p>   3.We avoid double refcounting. E.g. previously objects both used the zval refcount and an additional object refcount, which was    necessary to support by-object passing semantics.</p>
+<p>   4.As all complex values now embed a refcount, they can be shared independently of the zval mechanism. In particular it is now also possible to share strings. This is important to the hashtable implementation, as it no longer needs to copy non-interned string keys.</p>
+<h4 id="hashtable_in_PHP7">hashtable in PHP7</h4><p>php中的哈希边有两部组成：HashTable和Bucket</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _Bucket&#123;</span><br><span class="line">	zend_ulong h;</span><br><span class="line">	zend_string *key;</span><br><span class="line">	zval  val;</span><br><span class="line">&#125; Bucket;</span><br></pre></td></tr></table></figure>
+<p>Buckets是哈希表中重要的组成。在Buckets包含hash h，键值key和zval的值。同时zval嵌入到Bucket中，就和Bucket一起分配资源减少单独操作的开销。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _HashTable&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> nTableSize;  <span class="comment">//哈希表大小</span></span><br><span class="line">	<span class="keyword">uint32_t</span> nTableMask;</span><br><span class="line">	<span class="keyword">uint32_t</span> nNumUsed;</span><br><span class="line">	<span class="keyword">uint32_t</span> nNumOfElements;</span><br><span class="line">	zend_long nNextFreeElement;</span><br><span class="line">	Bucket    *arData;	</span><br><span class="line">	<span class="keyword">uint32_t</span>  *arHash;</span><br><span class="line">	<span class="keyword">dtor_func_t</span> pDestructor;</span><br><span class="line">	<span class="keyword">uint32_t</span> nInternalPointer;</span><br><span class="line">	<span class="keyword">union</span> &#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				zend_uchar nApplyCount,</span><br><span class="line">				<span class="keyword">uint16_t</span> reserve)</span><br><span class="line">		&#125; v;</span><br><span class="line">		<span class="keyword">uint32_t</span> flags;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125; HashTable;</span><br></pre></td></tr></table></figure>
+<p>arData数组中直接存储Bucket内容，而不是每个Bucket的指针，这样减少了独立分配每个Bucket和释放的开销。</p>
+<h4 id="HashTbale中的元素顺序">HashTbale中的元素顺序</h4><p>数组arData的元素顺序是由写入顺序决定的，与key之无关。nNumUsed代表arData中已经分配的大小，nNumOfElements代表arData中实际元素的多少。两个字段看似代表的是同一个意思，那为什么还要设置两个变量？</p>
+<pre><code>&lt;?php
+    <span class="variable">$array</span> = [<span class="string">'foo'</span>=&gt;<span class="number">0</span>,<span class="string">'bar'</span>=&gt;<span class="number">1</span>,<span class="number">0</span>=&gt;<span class="number">2</span>,<span class="string">'xyz'</span>=&gt;<span class="number">3</span>,<span class="number">2</span>=&gt;<span class="number">4</span>];
+    unset(<span class="variable">$array</span>[<span class="number">0</span>]);
+    unset(<span class="variable">$array</span>[<span class="string">'xyz'</span>]);
+?&gt;
+</code></pre><p>此时的arData：nTableSize = 8 ；nNumOfElements = 3 ；nNumUsed = 5<br>[0]: key=”foo”, val=int(0)<br>[1]: key=”bar”, val=int(1)<br>“<a href="val=UNDEF">2</a>: val=UNDEF“<br>“<a href="val=UNDEF">3</a>: val=UNDEF“<br>[4]: h=2, val=int(4)<br>[5]: NOT INITIALIZED<br>[6]: NOT INITIALIZED<br>[7]: NOT INITIALIZED</p>
+<p>那我们上面的数组遍历时，我们却到不到 下标为2和3的值，数组的遍历过程如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span></span><br><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i&lt; ht-&gt;nUumUsed;++i)&#123;</span><br><span class="line">	Bucket *b = &amp;ht-&gt;arData[i];</span><br><span class="line">	<span class="keyword">if</span>(Z_ISUNDEF(b-&gt;val)) <span class="keyword">continue</span>;</span><br><span class="line">	<span class="comment">//处理Bucket</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
