@@ -17,7 +17,7 @@ hashtable的概念是简单地来讲：字符串键值通过哈希函数得到�
 hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到">
 <meta property="og:image" content="http://chuantu.biz/t2/11/1439250546x-1566638931.png">
 <meta property="og:image" content="http://chuantu.biz/t2/11/1439332151x-954497701.png">
-<meta property="og:updated_time" content="2015-08-11T23:51:16.000Z">
+<meta property="og:updated_time" content="2015-08-11T23:53:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP内核学习 -- new hashtable in php 7">
 <meta name="twitter:description" content="PHP7 HashTable本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。
@@ -121,7 +121,7 @@ hashtable的概念是简单地来讲：字符串键值通过哈希函数得到�
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a>
+						<a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a>
 					</div>
 				</section>
 				
@@ -266,7 +266,7 @@ hashtable的概念是简单地来讲：字符串键值通过哈希函数得到�
 ?&gt;
 </code></pre><p>此时的arData：nTableSize = 8 ；nNumOfElements = 3 ；nNumUsed = 5<br>[0]: key=”foo”, val=int(0)<br>[1]: key=”bar”, val=int(1)<br>“<a href="val=UNDEF">2</a>: val=UNDEF“<br>“<a href="val=UNDEF">3</a>: val=UNDEF“<br>[4]: h=2, val=int(4)<br>[5]: NOT INITIALIZED<br>[6]: NOT INITIALIZED<br>[7]: NOT INITIALIZED</p>
 <p>那我们上面的数组遍历时，我们却到不到 下标为2和3的值，数组的遍历过程如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span></span><br><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i&lt; ht-&gt;nUumUsed;++i)&#123;</span><br><span class="line">	Bucket *b = &amp;ht-&gt;arData[i];</span><br><span class="line">	<span class="keyword">if</span>(Z_ISUNDEF(b-&gt;val)) <span class="keyword">continue</span>;</span><br><span class="line">	<span class="comment">//处理Bucket</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span></span><br><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i&lt; ht-&gt;nUumhashbiaoUsed;++i)&#123;</span><br><span class="line">	Bucket *b = &amp;ht-&gt;arData[i];</span><br><span class="line">	<span class="keyword">if</span>(Z_ISUNDEF(b-&gt;val)) <span class="keyword">continue</span>;</span><br><span class="line">	<span class="comment">//处理Bucket</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -275,6 +275,15 @@ hashtable的概念是简单地来讲：字符串键值通过哈希函数得到�
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/08/25/ext-struct/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PHP 内核学习 --- 扩展结构
+        
+      </div>
+    </a>
   
   
     <a href="/2015/08/09/php7-1/" id="article-nav-older" class="article-nav-link-wrap">
