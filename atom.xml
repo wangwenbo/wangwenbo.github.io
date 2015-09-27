@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   
-  <title><![CDATA[Hexo]]></title>
+  <title><![CDATA[Web PHP]]></title>
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
@@ -9,7 +9,7 @@
   <id>http://www.flydream.org//</id>
   
   <author>
-    <name><![CDATA[John Doe]]></name>
+    <name><![CDATA[阳关冰上]]></name>
     
   </author>
   
