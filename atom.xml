@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
-  <updated>2015-08-25T23:39:14.000Z</updated>
+  <updated>2015-10-06T04:55:41.000Z</updated>
   <id>http://www.flydream.org//</id>
   
   <author>
@@ -14,6 +14,43 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[PHP内核学习 --- 字符串函数 strstr,stristr,strpos,substr]]></title>
+    <link href="http://www.flydream.org/2015/10/06/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%87%BD%E6%95%B0-1/"/>
+    <id>http://www.flydream.org/2015/10/06/字符串函数-1/</id>
+    <published>2015-10-06T03:26:15.000Z</published>
+    <updated>2015-10-06T04:55:41.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="PHP_字符串函数（strstr,stristr,strpos,substr）">PHP 字符串函数（strstr,stristr,strpos,substr）</h3><h4 id="1-_strstr,stristr,strpos,">1. strstr,stristr,strpos,</h4><p>strstr - 查找字符串的首次出现，stristr功能一样但区分大小写；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">str</span><span class="params">(<span class="built_in">string</span> $haystack,mixed $needle,<span class="keyword">bool</span> $before_needle = <span class="literal">false</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>还有就是如果想仅仅确定needle是否存在于haystack中，更好地选择是strpos函数。<br>内置字符串函数的代码位置：源码文件/ext/standard/string.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">PHP_FUNCTION(<span class="built_in">strstr</span>)&#123;</span><br><span class="line">	zval *needle;</span><br><span class="line">	<span class="keyword">char</span> *haystack;</span><br><span class="line">	<span class="keyword">int</span> haystack_len;</span><br><span class="line">	<span class="keyword">char</span> *found = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">char</span> needle_char[<span class="number">2</span>];</span><br><span class="line">	<span class="keyword">long</span> found_offset;</span><br><span class="line">	zend_bool part = <span class="number">0</span>;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	.....</span><br><span class="line">		found = php_memnstr(haystack, Z_STRVAL_P(needle), Z_STRLEN_P(needle), haystack + haystack_len);</span><br><span class="line">	.....</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中核心的函数就是php_memnstr(),参数说明主字符串的指针，子串也就是被查字符串的指针，子字符串的长度，主字符串的末尾指针； 特别说明一点：php_memnstr只不过是定义的一个宏：#define php_memnstr zend_memnstr,<br>真正的函数实现：源码目录/Zend/zend_operators.h</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keyword">char</span> * <span class="title">zend_memnstr</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *haystack, <span class="keyword">const</span> <span class="keyword">char</span> *needle, <span class="keyword">int</span> needle_len, <span class="keyword">char</span> *end)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> *p = haystack;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> ne = needle[needle_len-<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (needle_len == <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> (<span class="keyword">char</span> *)<span class="built_in">memchr</span>(p, *needle, (end-p));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (needle_len &gt; end-haystack) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 最差情况下，不需要遍历到主字符串的末尾，end-=needl_len,就是遍历的终点 </span></span><br><span class="line">	end -= needle_len;  </span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span> (p &lt;= end) &#123;</span><br><span class="line">	   <span class="comment">//先比较头尾是否一致，达到排除掉只有末尾字符不相符的情况，减少比较的次数</span></span><br><span class="line">		<span class="keyword">if</span> ((p = (<span class="keyword">char</span> *)<span class="built_in">memchr</span>(p, *needle, (end-p+<span class="number">1</span>))) &amp;&amp; ne == p[needle_len-<span class="number">1</span>]) &#123; 				<span class="keyword">if</span> (!<span class="built_in">memcmp</span>(needle, p, needle_len-<span class="number">1</span>)) &#123;</span><br><span class="line">				<span class="keyword">return</span> p;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (p == <span class="literal">NULL</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		p++;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数有其实就是字符串的简单匹配，没用使用KMP算法，但也做了一些改进，如注释。<br>以上注释中的两处是暴力字符匹配中源码的两处改进的地方。<br>strstr和stristr的区别就是 后者会把字符串转成统一的小写,代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">PHPAPI <span class="keyword">char</span> *<span class="title">php_stristr</span><span class="params">(<span class="keyword">char</span> *s, <span class="keyword">char</span> *t, size_t s_len, size_t t_len)</span></span>&#123;</span><br><span class="line">	php_strtolower(s,s_len);</span><br><span class="line">	php_strtolower(t,t_len);</span><br><span class="line">	<span class="keyword">return</span> php_memnstr(s,t,t_len,s+s_len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-substr">2.substr</h4><p>substr 函数在php 5.2中在将截取之后原字符串也会发生变化，这应该是个bug，在php 5.6.13中没有出现这个问题。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="PHP_字符串函数（strstr,stristr,strpos,substr）">PHP 字符串函数（strstr,stristr,strpos,substr）</h3><h4 id="1-_strstr,stristr,strpos,">1. strstr,st]]>
+    </summary>
+    
+      <category term="PHP strstr,stristr,substr" scheme="http://www.flydream.org/tags/PHP-strstr-stristr-substr/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[nginx_epoll]]></title>
+    <link href="http://www.flydream.org/2015/10/05/nginx-epoll/"/>
+    <id>http://www.flydream.org/2015/10/05/nginx-epoll/</id>
+    <published>2015-10-05T00:44:50.000Z</published>
+    <updated>2015-10-05T00:44:50.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[PHP 内核学习 --- 扩展结构]]></title>
