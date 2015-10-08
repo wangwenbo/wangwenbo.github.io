@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PHP内核学习 --- 数组函数 （值排序和键排序） | Web PHP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="PHP 数组排序PHP中数组arsort的源代码：src/ext/standard/array.c
+12345678910111213141516PHP_FUNCTION(arsort)&amp;#123;	zval *array;	long sort_type = PHP_SORT_REGULAR;		if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP内核学习 --- 数组函数 （值排序和键排序）">
+<meta property="og:url" content="http://www.flydream.org/2015/10/06/数组函数-1/index.html">
+<meta property="og:site_name" content="Web PHP">
+<meta property="og:description" content="PHP 数组排序PHP中数组arsort的源代码：src/ext/standard/array.c
+12345678910111213141516PHP_FUNCTION(arsort)&amp;#123;	zval *array;	long sort_type = PHP_SORT_REGULAR;		if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,">
+<meta property="og:updated_time" content="2015-10-07T04:03:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP内核学习 --- 数组函数 （值排序和键排序）">
+<meta name="twitter:description" content="PHP 数组排序PHP中数组arsort的源代码：src/ext/standard/array.c
+12345678910111213141516PHP_FUNCTION(arsort)&amp;#123;	zval *array;	long sort_type = PHP_SORT_REGULAR;		if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,">
+  
+    <link rel="alternative" href="/atom.xml" title="Web PHP" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="null" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">阳关冰上</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="/#" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="/#" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="/#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="/#" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">奥巴马的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">卡卡的美丽传说</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">本泽马的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">吉格斯的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">习大大大不同</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">托蒂的博客</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">阳关冰上</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="null" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">阳关冰上</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="/#" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="/#" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="/#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="/#" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-数组函数-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/06/数组函数-1/" class="article-date">
+  	<time datetime="2015-10-06T07:34:23.000Z" itemprop="datePublished">2015-10-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PHP内核学习 --- 数组函数 （值排序和键排序）
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/">数组值value:arsort asort;数组key排序:krsort ksort</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="PHP_数组排序">PHP 数组排序</h4><p>PHP中数组arsort的源代码：src/ext/standard/array.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">PHP_FUNCTION(arsort)&#123;</span><br><span class="line">	zval *<span class="built_in">array</span>;</span><br><span class="line">	<span class="keyword">long</span> sort_type = PHP_SORT_REGULAR;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,<span class="string">"a|l"</span>,$<span class="built_in">array</span>,&amp;sort_type) == FAILURE)&#123;</span><br><span class="line">		RETURN_FALSE;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	php_set_compare_func(sort_type TSRMLS_CC);</span><br><span class="line">	<span class="comment">//数组排序的zend实现</span></span><br><span class="line">	<span class="keyword">if</span> (zend_hash_sort(Z_ARRVAL_P(<span class="built_in">array</span>), zend_qsort, php_array_reverse_data_compare, <span class="number">0</span> TSRMLS_CC) == FAILURE) &#123;</span><br><span class="line">		RETURN_FALSE;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	RETURN_TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除了之外的三个函数：asort，ksort，krsort 的源代码与上述代码类似；它们实现的核心都在第11行的zend_hash_sort函数中。下面是zend_hash_sort的实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">				</span><br><span class="line"><span class="function">ZEND_API <span class="keyword">int</span> <span class="title">zend_hash_sort</span><span class="params">(HashTable *ht, sort_func_t sort_func,compare_func_t compar, </span><br><span class="line"><span class="keyword">int</span> renumber TSRMLS_DC)</span></span>&#123;</span><br><span class="line">	Bucket **arTmp;  <span class="comment">// 新的Bucket数组 数组元素为Bucket类型指针</span></span><br><span class="line">	Bucket *p;</span><br><span class="line">	<span class="keyword">int</span> i, j;</span><br><span class="line"></span><br><span class="line">	IS_CONSISTENT(ht);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!(ht-&gt;nNumOfElements&gt;<span class="number">1</span>) &amp;&amp; !(renumber &amp;&amp; ht-&gt;nNumOfElements&gt;<span class="number">0</span>)) &#123; <span class="comment">/* Doesn't require sorting */</span></span><br><span class="line">		<span class="keyword">return</span> SUCCESS;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/*</span><br><span class="line">	 * 保存哈希表中每个Bucket对应指针到数组arTmp中</span><br><span class="line">	 */</span></span><br><span class="line">	arTmp = (Bucket **) pemalloc(ht-&gt;<span class="function">nNumOfElements * <span class="title">sizeof</span><span class="params">(Bucket *)</span>, ht-&gt;persistent)</span>;</span><br><span class="line">	p = ht-&gt;pListHead;</span><br><span class="line">	i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (p) &#123;</span><br><span class="line">		arTmp[i] = p;</span><br><span class="line">		p = p-&gt;pListNext;</span><br><span class="line">		i++;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">//zend实现的快速排序 ,对Bucket重新排序，</span></span><br><span class="line">	(*sort_func)((<span class="keyword">void</span> *) arTmp, i, <span class="keyword">sizeof</span>(Bucket *), compar TSRMLS_CC);</span><br><span class="line"></span><br><span class="line">	HANDLE_BLOCK_INTERRUPTIONS();</span><br><span class="line">	</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//34 - 50行</span></span><br><span class="line">    <span class="comment">//重置hash表中双向链表的节点（即Bucket）顺序</span></span><br><span class="line">	ht-&gt;pListHead = arTmp[<span class="number">0</span>];           </span><br><span class="line">	ht-&gt;pListTail = <span class="literal">NULL</span>;</span><br><span class="line">	ht-&gt;pInternalPointer = ht-&gt;pListHead;    <span class="comment">//ht-&gt;pInternalPointe:遍历数组元素</span></span><br><span class="line"></span><br><span class="line">	arTmp[<span class="number">0</span>]-&gt;pListLast = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">if</span> (i &gt; <span class="number">1</span>) &#123;</span><br><span class="line">		arTmp[<span class="number">0</span>]-&gt;pListNext = arTmp[<span class="number">1</span>];</span><br><span class="line">		<span class="keyword">for</span> (j = <span class="number">1</span>; j &lt; i-<span class="number">1</span>; j++) &#123;</span><br><span class="line">			arTmp[j]-&gt;pListLast = arTmp[j-<span class="number">1</span>];</span><br><span class="line">			arTmp[j]-&gt;pListNext = arTmp[j+<span class="number">1</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		arTmp[j]-&gt;pListLast = arTmp[j-<span class="number">1</span>];</span><br><span class="line">		arTmp[j]-&gt;pListNext = <span class="literal">NULL</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		arTmp[<span class="number">0</span>]-&gt;pListNext = <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	ht-&gt;pListTail = arTmp[i-<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">	pefree(arTmp, ht-&gt;persistent);</span><br><span class="line">	HANDLE_UNBLOCK_INTERRUPTIONS();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (renumber) &#123;</span><br><span class="line">		zend_hash_reindex(ht, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PHP中hashtable 中两种双向链表，第一种：所有数组元素（Bucket）组成的双向链表，默认下各个元素之间的顺序是创建时的顺序，它们之间是通过结构体HashTable中的pListHead和pListTail 以及 结构体Bucket中的pListNext、pListLast来组成的双向链表的；第二种：就是同一个key下对应相同的hash值，即有些Bucket的成员变量h值相同，它们之间组成第二种双向链表。 以上四种数组排序就是按照Bucket中的某个成员变量快速排序之后，重置第一种链表中节点的相对顺序。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/06/数组函数-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PHP内核学习 --- 数组函数（合并和替换）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/06/字符串函数-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PHP内核学习 --- 字符串函数 strstr,stristr,strpos,substr</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="数组函数-1" data-title="PHP内核学习 --- 数组函数 （值排序和键排序）" data-url="http://www.flydream.org/2015/10/06/数组函数-1/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 阳关冰上
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
