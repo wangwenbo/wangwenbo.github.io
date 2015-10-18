@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
 					</div>
 				</section>
 				
@@ -191,6 +191,166 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-js-原型-实例-原型链" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/16/js-原型-实例-原型链/" class="article-date">
+  	<time datetime="2015-10-16T14:41:22.000Z" itemprop="datePublished">2015-10-16</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/16/js-原型-实例-原型链/">js(原型-实例-原型链)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-数组函数-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/16/数组函数-3/" class="article-date">
+  	<time datetime="2015-10-16T14:40:11.000Z" itemprop="datePublished">2015-10-16</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/16/数组函数-3/">PHP内核学习 -- 数组函数 （获取首尾元素）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="PHP_获取数组头尾元素">PHP 获取数组头尾元素</h4><p>array_pop 和array_shift的函數原型如下,位置src/ext/standard/array.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">PHP_FUNCTION(array_pop)&#123;</span><br><span class="line">	_phpi_pop(INTERNAL_FUNCTION_PARAM_PASSTHRU,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line">PHP_FUNCTION(array_shift)&#123;</span><br><span class="line">	_phpi_php(INTERNAL_FUNCTION_PARAM_PASSTHRU,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上面的原型可以看出，获取数组头元素的array_shift 和获取尾元素的函数array_pop在源码中都是通过_phpi_php来处理的，_phpi_php的代码如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> _phpi_pop(INTERNAL_FUNCTION_PARAMETES,<span class="keyword">int</span> off_the_end)</span><br><span class="line">&#123;</span><br><span class="line">	zval *<span class="built_in">stack</span>;   <span class="comment">/* Input stack */</span></span><br><span class="line">	     **val;    <span class="comment">/* Value to be popped */</span></span><br><span class="line">	<span class="keyword">char</span> *key = <span class="literal">NULL</span>;</span><br><span class="line">	uint key_len = <span class="number">0</span>;</span><br><span class="line">	ulong index;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, <span class="string">"a"</span>,&amp;<span class="built_in">stack</span>) == FAILURE)&#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;     </span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>(zend_hash_num_elements(Z_ARRVAL_P(<span class="built_in">stack</span>)) == <span class="number">0</span>)&#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/* Get the first or last value and copy it into the return value */</span></span><br><span class="line">	<span class="keyword">if</span>(off_the_end)&#123;</span><br><span class="line">		<span class="preprocessor">###HashTable（ht）中成员变量ht-&gt;pInternalPointer 指向链表的末尾即数据的最后一个元素</span></span><br><span class="line">		zend_hash_internal_pointer_end(Z_ARRVAL_P(<span class="built_in">stack</span>));</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="preprocessor">###HashTable（ht）中成员变量ht-&gt;pInternalPointer 指向链表的头即数组的第一个元素</span></span><br><span class="line">		zend_hash_internal_pointer_reset(Z_ARRVAL_P(<span class="built_in">stack</span>));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="preprocessor">###获取目标元素，并存储在val中</span></span><br><span class="line">	zend_hash_get_current_data(Z_ARRVAL_P(<span class="built_in">stack</span>),(<span class="keyword">void</span> **)&amp;val);</span><br><span class="line">	RETVAL_ZVAL_FAST(*val);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/* Delete the first or last value */</span></span><br><span class="line">	zend_hash_get_current_key_ex(Z_ARRVAL_P(<span class="built_in">stack</span>), &amp;key, &amp;key_len, &amp;index, <span class="number">0</span>, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (<span class="function">key &amp;&amp; <span class="title">Z_ARRVAL_P</span><span class="params">(<span class="built_in">stack</span>)</span> </span>== &amp;EG(symbol_table)) &#123;</span><br><span class="line">		zend_delete_global_variable(key, key_len - <span class="number">1</span> TSRMLS_CC);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="preprocessor">###删除链表中元素 重点就在此重置hasttable中的链表</span></span><br><span class="line">	    zend_hash_del_key_or_index(Z_ARRVAL_P(<span class="built_in">stack</span>), key, key_len, index, (key) ? HASH_DEL_KEY : HASH_DEL_INDEX);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* If we did a shift... re-index like it did before */</span></span><br><span class="line">	<span class="keyword">if</span> (!off_the_end) &#123;</span><br><span class="line">		zend_hash_reindex(Z_ARRVAL_P(<span class="built_in">stack</span>), <span class="number">1</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!<span class="function">key_len &amp;&amp; <span class="title">Z_ARRVAL_P</span><span class="params">(<span class="built_in">stack</span>)</span>-&gt;nNextFreeElement &gt; 0 &amp;&amp; index &gt;</span>= Z_ARRVAL_P(<span class="built_in">stack</span>)-&gt;nNextFreeElement - <span class="number">1</span>) &#123;</span><br><span class="line">		Z_ARRVAL_P(<span class="built_in">stack</span>)-&gt;nNextFreeElement = Z_ARRVAL_P(<span class="built_in">stack</span>)-&gt;nNextFreeElement - <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">       <span class="preprocessor">### ht-&gt;pInternalPointer = ht-&gt;pListHead</span></span><br><span class="line">	zend_hash_internal_pointer_reset(Z_ARRVAL_P(<span class="built_in">stack</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在获取目标元素后，将它复制一份新的，然后返回；但在这期间还有一步很重要的就是HashTable中链表重置（两种链表），zend_hash_del_key_or_index(src/zend/zend_hash.c)函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">ZEND_API <span class="keyword">int</span> <span class="title">zend_hash_del_key_or_index</span><span class="params">(HashTable *ht, <span class="keyword">const</span> 	<span class="keyword">char</span> *arKey, uint nKeyLength, ulong h, <span class="keyword">int</span> flag)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">	uint nIndex;</span><br><span class="line">	Bucket *p;</span><br><span class="line"></span><br><span class="line">	IS_CONSISTENT(ht);</span><br><span class="line">	<span class="preprocessor">### 针对string类型的键 计算hash值</span></span><br><span class="line">	<span class="keyword">if</span> (flag == HASH_DEL_KEY) &#123;</span><br><span class="line">		h = zend_inline_hash_func(arKey, nKeyLength);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="preprocessor">### 获取目标元素在arBuckets数组中的位置（arBuckets数组存放着数组中所有元素的实际存储位置）</span></span><br><span class="line">	nIndex = h &amp; ht-&gt;nTableMask;</span><br><span class="line">	</span><br><span class="line">	p = ht-&gt;arBuckets[nIndex];</span><br><span class="line">	<span class="preprocessor">### PHP中哈希冲突是通过拉链法解决的 所以此时的p指向一个由有相同hash值的元素组成的链表的</span></span><br><span class="line">	<span class="keyword">while</span> (p != <span class="literal">NULL</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> ((p-&gt;h == h) </span><br><span class="line">		 	&amp;&amp; (p-&gt;nKeyLength == nKeyLength)</span><br><span class="line">		 	&amp;&amp; ((p-&gt;nKeyLength == <span class="number">0</span>) <span class="comment">/* Numeric index (short circuits the memcmp() check) */</span></span><br><span class="line">			 || !<span class="built_in">memcmp</span>(p-&gt;arKey, arKey, nKeyLength))) &#123; <span class="comment">/*String index */</span></span><br><span class="line">		<span class="preprocessor">### 刚才说到了相同hash组成的链表，还有一个链表就是我们遍历数组使用到的，它维护者元素之间的相对顺序；</span></span><br><span class="line">		<span class="preprocessor">### i_zend_hash_bucket_delete 重置上述两种双向链表</span></span><br><span class="line">		i_zend_hash_bucket_delete(ht, p);</span><br><span class="line">		<span class="keyword">return</span> SUCCESS;</span><br><span class="line">		&#125;</span><br><span class="line">		p = p-&gt;pNext;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> FAILURE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/array-pop-array-shift/">array_pop,array_shift</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+  
+    <article id="post-网路函数-curl" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/10/网路函数-curl/" class="article-date">
+  	<time datetime="2015-10-09T22:47:14.000Z" itemprop="datePublished">2015-10-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/10/网路函数-curl/">网路函数-curl</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-数组函数-2" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -786,217 +946,10 @@
 
 
   
-    <article id="post-varlifttime" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2015/08/08/varlifttime/" class="article-date">
-  	<time datetime="2015-08-08T08:44:32.000Z" itemprop="datePublished">2015-08-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/08/varlifttime/">PHP 内核学习 -- 变量的作用域和生命周期</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="作用域_生命周期"><strong>作用域</strong> <strong>生命周期</strong></h3><p>变量的作用域本质是一块代码区域，在这个区域内可以访问某个具体的变量，超出这个区域后，变量就无法被访问到。</p>
-<h4 id="全局变量和局部变量">全局变量和局部变量</h4><p>全局变量是在整个程序中任何地方随意调用的变量， 在PHP中，除了声明在函数体内的普通变量均为全局变量，在函数体内则可以通过global语句来声明。 相对于全局变量，局部变量的作用域是程序中的部分代码（如函数中），而不是程序的全部。</p>
-<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
-    <span class="function"><span class="keyword">function</span> <span class="title">scope</span><span class="params">()</span></span>{
-        <span class="variable">$liftcycle</span> = <span class="string">"wang"</span>;
-    }
-<span class="preprocessor">?&gt;</span></span>
-</code></pre><p>变量的生命周期和作用域有一定的联系，如函数中的局部变量$filecycle，它的生命开始func scope的执行，结束于函数执行完毕。</p>
-<p>PHP变量的作用域是如何实现 ？全局变量和局部变量的的作用域实现有什么区别？</p>
-<p>zend引擎有一个_zend_executor_globals结构，全局变量就保存在symbol_table这个全局符号表中；active_symbol_table中保存局部变量，这些局部变量可能是来自函数或者对象的属性等；而且每个独立的函数运行时都有自己的active_symbol_table,保证作用域独立。</p>
-<p>下面来看一下，_zend_execute_data (zend/zend_complie.h)的结构：</p>
-<pre><code><span class="comment"><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_execute_data &#123;    </span><br><span class="line">	<span class="keyword">struct</span> _zend_op *opline;</span><br><span class="line">	zend_function_state function_state;</span><br><span class="line">	zend_op_array *op_array;</span><br><span class="line">	zval *object;</span><br><span class="line">	HashTable *symbol_table;</span><br><span class="line">	<span class="keyword">struct</span> _zend_execute_data *prev_execute_data;</span><br><span class="line">	zval *old_error_reporting;</span><br><span class="line">	zend_bool nested;</span><br><span class="line">	zval **original_return_value;</span><br><span class="line">	zend_class_entry *current_scope;</span><br><span class="line">	zend_class_entry *current_called_scope;</span><br><span class="line">	zval *current_this;</span><br><span class="line">	<span class="keyword">struct</span> _zend_op *fast_ret; <span class="comment">/* used by FAST_CALL/FAST_RET (finally keyword) */</span></span><br><span class="line">	zval *delayed_exception;</span><br><span class="line">	call_slot *call_slots;</span><br><span class="line">	call_slot *call;</span><br><span class="line">&#125; zend_execute_data;</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>函数中的局部变量就存储在_zend_execute_data的symbol_table中，在执行当前函数的op_array时， 全局zend_executor_globals中的<em>active_symbol_table会指向当前_zend_execute_data中的</em>symbol_table。 因为每个函数调用开始时都会重新初始化EG(active_symbol_table)为NULL， 在这个函数的所有opcode的执行过程中这个全局变量会一直存在，并且所有的局部变量修改都是在它上面操作完成的，如前面的赋值操作等。 而此时，其他函数中的symbol_table会存放在栈中，将当前函数执行完并返回时，程序会将之前保存的zend_execute_data恢复， 从而其他函数中的变量也就不会被找到，局部变量的作用域就是以这种方式来实现的。 相关操作在 Zend/zend_vm_execute.h 文件中定义的execute函数中一目了然，如下所示代码：</p>
-<pre><code><span class="comment"><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">zend_vm_enter:</span><br><span class="line"><span class="comment">/* Initialize execute_data */</span></span><br><span class="line">execute_data = (zend_execute_data *)zend_vm_stack_alloc(</span><br><span class="line">    <span class="keyword">sizeof</span>(zend_execute_data) +</span><br><span class="line">    <span class="keyword">sizeof</span>(zval**) * op_array-&gt;last_var *(EG(active_symbol_table) ? <span class="number">1</span> : <span class="number">2</span>) +</span><br><span class="line">    <span class="keyword">sizeof</span>(temp_variable) * op_array-&gt;T TSRMLS_CC);</span><br><span class="line"> </span><br><span class="line">EX(symbol_table) = EG(active_symbol_table);</span><br><span class="line">EX(prev_execute_data) = EG(current_execute_data);</span><br><span class="line">EG(current_execute_data) = execute_data;</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>EX宏的作用是获取结构体zend_execute_data的字段值。它的实现是:#define EX(element) execute_data-&gt;element</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP内核-变量-作用域-生命周期/">PHP内核 变量 作用域 生命周期</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-variableAnalysie" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/08/variableAnalysie/" class="article-date">
-  	<time datetime="2015-08-07T22:36:05.000Z" itemprop="datePublished">2015-08-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/08/variableAnalysie/">PHP 内核学习 -- 变量的结构和类型</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="弱变量_ZVAL_HashTable"><strong>弱变量</strong>  <strong>ZVAL</strong>  <strong>HashTable</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
-<h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变量存储结构ZVAL(Zend/zend.h)如下：</p>
-<pre><code>struct _zval_struct{
-    /<span class="keyword">*</span>变量信息<span class="keyword">*</span>/
-    zvalue_value value; /<span class="keyword">*</span>存储变量的值<span class="keyword">*</span>/
-    zend_uint refcount__gc; /<span class="keyword">*</span>引用次数<span class="keyword">*</span>/
-    zend_uchar type     /<span class="keyword">*</span>变量的类型<span class="keyword">*</span>/
-    zend_uchar is_ref__gc;  /<span class="keyword">*</span>是否引用<span class="keyword">*</span>/
-}zval;
-</code></pre><p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
-<h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)就是变量值实际存储的地方，zvalue_value 的结果如下：</p>
-<pre><code><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value{
-    <span class="keyword">long</span> lval;
-    <span class="keyword">double</span> dval;
-    <span class="keyword">struct</span>{
-        <span class="keyword">char</span> *val;
-        <span class="keyword">int</span> len;
-    } str;         <span class="comment">/*字符串*/</span>
-    HashTable *ht;    <span class="comment">/*数组*/</span>
-    zend_object_value obj;  <span class="comment">/*对象*/</span>
-    zend_ast *ast;    <span class="comment">/*抽象语法树*/</span>
-}zvalue_value;
-</code></pre><p>由于一个变量只能是一种类型,所以变量实际存储的结构zvalue_value,采用联合体的结构，这样可以避免浪费大量内存。<br>zvalue_value 中各个成员负责存储不同的变量，整型和布尔值在存储在zvalue_value.lval；dval存储浮点数； str存储字符串；ht 负责存储数组； obj和ast分别存储对象和语法树。</p>
-<h4 id="-array（数组）">.array（数组）</h4><p>数组在PHP是一种很强大的变量，因为PHP为数组提供了丰富的内置函数，同时还可以存储其它类型的变量。PHP数组的强大依赖于哈希表，一种高效的键值对存储结构。在PHP中，处处可见哈希表的存在，从变量的作用域到函数表(active_table)和对象等。</p>
-<h4 id="Object（对象）">Object（对象）</h4><pre><code>typedef struct <span class="number">_</span>zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span><span class="keyword">value</span>{
-    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handle handle;  <span class="comment">//对象在对象池中的索引</span>
-    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handlers *handlers;
-}
-</code></pre><p>EG宏，一个全局结构体用于保存在运行时的数据。 PHP的对象只有在运行时才会被创建，其中就包括了用来保存所有被创建的对象的对象池EG(objects_store)，而handle域就是当前对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。 这个结构体及对象相关的类的结构_zend_class_entry。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP内核-变量/">PHP内核 变量</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/03/hello-world/" class="article-date">
-  	<time datetime="2015-08-03T15:13:03.000Z" itemprop="datePublished">2015-08-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/03/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </div>
       <footer id="footer">
