@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
-  <updated>2015-10-16T14:41:22.000Z</updated>
+  <updated>2015-10-18T14:20:27.000Z</updated>
   <id>http://www.flydream.org//</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[js(原型-实例-原型链)]]></title>
-    <link href="http://www.flydream.org/2015/10/16/js-%E5%8E%9F%E5%9E%8B-%E5%AE%9E%E4%BE%8B-%E5%8E%9F%E5%9E%8B%E9%93%BE/"/>
-    <id>http://www.flydream.org/2015/10/16/js-原型-实例-原型链/</id>
-    <published>2015-10-16T14:41:22.000Z</published>
-    <updated>2015-10-16T14:41:22.000Z</updated>
+    <title><![CDATA[js_事件]]></title>
+    <link href="http://www.flydream.org/2015/10/18/js-%E4%BA%8B%E4%BB%B6/"/>
+    <id>http://www.flydream.org/2015/10/18/js-事件/</id>
+    <published>2015-10-18T14:20:27.000Z</published>
+    <updated>2015-10-18T14:20:27.000Z</updated>
     <content type="html"></content>
     <summary type="html">
     
@@ -29,11 +29,37 @@
   </entry>
   
   <entry>
+    <title><![CDATA[js(原型-实例-原型链)]]></title>
+    <link href="http://www.flydream.org/2015/10/16/js-%E5%8E%9F%E5%9E%8B-%E5%AE%9E%E4%BE%8B-%E5%8E%9F%E5%9E%8B%E9%93%BE/"/>
+    <id>http://www.flydream.org/2015/10/16/js-原型-实例-原型链/</id>
+    <published>2015-10-16T14:41:22.000Z</published>
+    <updated>2015-10-18T23:18:26.000Z</updated>
+    <content type="html"><![CDATA[<h4 id="javascript的原型对象">javascript的原型对象</h4><p>在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">student</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line">student.prototype.name =<span class="string">"jack"</span>;</span><br><span class="line">student.prototype.class =<span class="string">"高1(2)班"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stu1 = <span class="keyword">new</span> student();</span><br><span class="line">	<span class="built_in">console</span>.log(stu1.name); <span class="comment">//jack  </span></span><br><span class="line"><span class="keyword">var</span> stu2 = <span class="keyword">new</span> student();</span><br><span class="line">	<span class="built_in">console</span>.log(stu2.name); <span class="comment">//jack</span></span><br></pre></td></tr></table></figure>
+<p>实例对象stu1和stu2 拥有同样的属性name和class，即共享了原型对象（student Prototype）的属性。</p>
+<p>js中只要创建了一个函数，js就会为这个函数添加prototype属性，这个prototype属性指向函数的原型对象。而且原型对象也有一个construcor属性，指向它对应的函数。我们如果想向原型对象添加属性和方法，只能通过函数的prototype属性访问到原型对象，下面是构造函数，实例，原型对象之间的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">student.prototype ---------&gt; student Prototype</span><br><span class="line">stu1.[[Prototype]]---------&gt; student Prototype</span><br><span class="line">stu2.[[Prototype]]---------&gt; student Prototype</span><br><span class="line"></span><br><span class="line">student Prototype.constructor-------&gt;student</span><br></pre></td></tr></table></figure>
+<p>构造函数stduent以及两个实例stu1和stu2 ，它们共同指向原型对象student Prototype，而实例和构造函数之间没有直接关联。同时还有原型对象的constructor指向构造函数。</p>
+<h4 id="继承">继承</h4><p>js中的继承是通过原型链来实现继承。这里我就直接使用《javascript 高级程序程序设计<br>》中的例子,实现原型链的基本模式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">SuperType</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.property = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">SuperType.prototype.getSuperValue = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.property;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">SubType</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.subproperty = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//继承 SuperType</span></span><br><span class="line">SubType.prototype = <span class="keyword">new</span> SuperType();</span><br><span class="line">SubType.prototype = getSubValue = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.subproperty;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> instance = <span class="keyword">new</span> SubType();</span><br><span class="line"><span class="built_in">console</span>.log(instance.getSuperValue());  <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+<p>上述来两个构造函数SuperType和SubType都一个属性和方法，实例instance可以调用SuperType的方法getSuperValue，即实现了继承；实现的方式是SubType的prototype属性值，不再指向js为它创建的默认原型对象而是指向了SuperType的实例，但是SuperType的实例是指向它自己的默认原型对象的，这样instance也就可以访问SuperType的原型对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">SubType.prototype---&gt;SubType Prototype</span><br><span class="line">instance.[[Prototype]]---&gt; SubType Prototype.[[Prototype]]---&gt;SuperType Prototype</span><br><span class="line">SuperType Prototype.constructor---&gt;SuperType</span><br><span class="line">SuperType.prototype ---&gt; SuperType Prototye</span><br></pre></td></tr></table></figure>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h4 id="javascript的原型对象">javascript的原型对象</h4><p>在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。</p>
+<figure c]]>
+    </summary>
+    
+      <category term="原型 原型链 继承" scheme="http://www.flydream.org/tags/%E5%8E%9F%E5%9E%8B-%E5%8E%9F%E5%9E%8B%E9%93%BE-%E7%BB%A7%E6%89%BF/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[PHP内核学习 -- 数组函数 （获取首尾元素）]]></title>
     <link href="http://www.flydream.org/2015/10/16/%E6%95%B0%E7%BB%84%E5%87%BD%E6%95%B0-3/"/>
     <id>http://www.flydream.org/2015/10/16/数组函数-3/</id>
     <published>2015-10-16T14:40:11.000Z</published>
-    <updated>2015-10-18T12:10:20.000Z</updated>
+    <updated>2015-10-18T12:10:18.000Z</updated>
     <content type="html"><![CDATA[<h4 id="PHP_获取数组头尾元素">PHP 获取数组头尾元素</h4><p>array_pop 和array_shift的函數原型如下,位置src/ext/standard/array.c</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">PHP_FUNCTION(array_pop)&#123;</span><br><span class="line">	_phpi_pop(INTERNAL_FUNCTION_PARAM_PASSTHRU,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line">PHP_FUNCTION(array_shift)&#123;</span><br><span class="line">	_phpi_php(INTERNAL_FUNCTION_PARAM_PASSTHRU,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>通过上面的原型可以看出，获取数组头元素的array_shift 和获取尾元素的函数array_pop在源码中都是通过_phpi_php来处理的，_phpi_php的代码如下:</p>

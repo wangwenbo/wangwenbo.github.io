@@ -5,16 +5,19 @@
   
   <title>js(原型-实例-原型链) | Web PHP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
+  <meta name="description" content="javascript的原型对象在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。
+1234567891011function student&amp;#123;	&amp;#125;student.prototype.name =&quot;jack&quot;;student.prototype.class =&quot;高1(2)班&quot;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="js(原型-实例-原型链)">
 <meta property="og:url" content="http://www.flydream.org/2015/10/16/js-原型-实例-原型链/index.html">
 <meta property="og:site_name" content="Web PHP">
-<meta property="og:description">
-<meta property="og:updated_time" content="2015-10-16T14:41:22.000Z">
+<meta property="og:description" content="javascript的原型对象在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。
+1234567891011function student&amp;#123;	&amp;#125;student.prototype.name =&quot;jack&quot;;student.prototype.class =&quot;高1(2)班&quot;">
+<meta property="og:updated_time" content="2015-10-18T23:18:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="js(原型-实例-原型链)">
-<meta name="twitter:description">
+<meta name="twitter:description" content="javascript的原型对象在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。
+1234567891011function student&amp;#123;	&amp;#125;student.prototype.name =&quot;jack&quot;;student.prototype.class =&quot;高1(2)班&quot;">
   
     <link rel="alternative" href="/atom.xml" title="Web PHP" type="application/atom+xml">
   
@@ -113,7 +116,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/原型-原型链-继承/" style="font-size: 10px;">原型 原型链 继承</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
 					</div>
 				</section>
 				
@@ -216,6 +219,10 @@
       
       <div class="article-info article-info-post">
         
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/原型-原型链-继承/">原型 原型链 继承</a></li></ul>
+	</div>
+
         
 
         <div class="clearfix"></div>
@@ -224,7 +231,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h4 id="javascript的原型对象">javascript的原型对象</h4><p>在js中每一个函数都一个原型属性(prototype),它是一个指向另一个对象指针，这个对象可以让同一个函数的所有实例共享属性和方法，这个对象就是原型对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">student</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line">student.prototype.name =<span class="string">"jack"</span>;</span><br><span class="line">student.prototype.class =<span class="string">"高1(2)班"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> stu1 = <span class="keyword">new</span> student();</span><br><span class="line">	<span class="built_in">console</span>.log(stu1.name); <span class="comment">//jack  </span></span><br><span class="line"><span class="keyword">var</span> stu2 = <span class="keyword">new</span> student();</span><br><span class="line">	<span class="built_in">console</span>.log(stu2.name); <span class="comment">//jack</span></span><br></pre></td></tr></table></figure>
+<p>实例对象stu1和stu2 拥有同样的属性name和class，即共享了原型对象（student Prototype）的属性。</p>
+<p>js中只要创建了一个函数，js就会为这个函数添加prototype属性，这个prototype属性指向函数的原型对象。而且原型对象也有一个construcor属性，指向它对应的函数。我们如果想向原型对象添加属性和方法，只能通过函数的prototype属性访问到原型对象，下面是构造函数，实例，原型对象之间的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">student.prototype ---------&gt; student Prototype</span><br><span class="line">stu1.[[Prototype]]---------&gt; student Prototype</span><br><span class="line">stu2.[[Prototype]]---------&gt; student Prototype</span><br><span class="line"></span><br><span class="line">student Prototype.constructor-------&gt;student</span><br></pre></td></tr></table></figure>
+<p>构造函数stduent以及两个实例stu1和stu2 ，它们共同指向原型对象student Prototype，而实例和构造函数之间没有直接关联。同时还有原型对象的constructor指向构造函数。</p>
+<h4 id="继承">继承</h4><p>js中的继承是通过原型链来实现继承。这里我就直接使用《javascript 高级程序程序设计<br>》中的例子,实现原型链的基本模式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">SuperType</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.property = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">SuperType.prototype.getSuperValue = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.property;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">SubType</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">this</span>.subproperty = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//继承 SuperType</span></span><br><span class="line">SubType.prototype = <span class="keyword">new</span> SuperType();</span><br><span class="line">SubType.prototype = getSubValue = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.subproperty;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> instance = <span class="keyword">new</span> SubType();</span><br><span class="line"><span class="built_in">console</span>.log(instance.getSuperValue());  <span class="comment">//true</span></span><br></pre></td></tr></table></figure>
+<p>上述来两个构造函数SuperType和SubType都一个属性和方法，实例instance可以调用SuperType的方法getSuperValue，即实现了继承；实现的方式是SubType的prototype属性值，不再指向js为它创建的默认原型对象而是指向了SuperType的实例，但是SuperType的实例是指向它自己的默认原型对象的，这样instance也就可以访问SuperType的原型对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">SubType.prototype---&gt;SubType Prototype</span><br><span class="line">instance.[[Prototype]]---&gt; SubType Prototype.[[Prototype]]---&gt;SuperType Prototype</span><br><span class="line">SuperType Prototype.constructor---&gt;SuperType</span><br><span class="line">SuperType.prototype ---&gt; SuperType Prototye</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -232,6 +249,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/10/18/js-事件/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          js_事件
+        
+      </div>
+    </a>
   
   
     <a href="/2015/10/16/数组函数-3/" id="article-nav-older" class="article-nav-link-wrap">
