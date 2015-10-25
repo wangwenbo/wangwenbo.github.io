@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>nginx_epoll | Web PHP</title>
+  <title>js_事件 | Web PHP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nginx_epoll">
-<meta property="og:url" content="http://www.flydream.org/2015/10/05/nginx-epoll/index.html">
+<meta property="og:title" content="js_事件">
+<meta property="og:url" content="http://www.flydream.org/2015/10/18/js-事件/index.html">
 <meta property="og:site_name" content="Web PHP">
 <meta property="og:description">
-<meta property="og:updated_time" content="2015-10-05T00:44:50.000Z">
+<meta property="og:updated_time" content="2015-10-18T14:20:27.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="nginx_epoll">
+<meta name="twitter:title" content="js_事件">
 <meta name="twitter:description">
   
     <link rel="alternative" href="/atom.xml" title="Web PHP" type="application/atom+xml">
@@ -113,7 +113,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/web-cache/" style="font-size: 10px;">web cache</a> <a href="/tags/原型-原型链-继承/" style="font-size: 10px;">原型 原型链 继承</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a>
 					</div>
 				</section>
 				
@@ -191,11 +191,11 @@
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-nginx-epoll" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-js-事件" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/10/05/nginx-epoll/" class="article-date">
-  	<time datetime="2015-10-05T00:44:50.000Z" itemprop="datePublished">2015-10-05</time>
+      <a href="/2015/10/18/js-事件/" class="article-date">
+  	<time datetime="2015-10-18T14:20:27.000Z" itemprop="datePublished">2015-10-18</time>
 </a>
     </div>
   
@@ -208,7 +208,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      nginx_epoll
+      js_事件
     </h1>
   
 
@@ -233,18 +233,18 @@
     
 <nav id="article-nav">
   
-    <a href="/2015/10/06/字符串函数-1/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/10/25/有关缓存/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          PHP内核学习 --- 字符串函数 strstr,stristr,strpos,substr
+          有关缓存
         
       </div>
     </a>
   
   
-    <a href="/2015/08/25/ext-struct/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">PHP 内核学习 --- 扩展结构</div>
+    <a href="/2015/10/16/js-原型-实例-原型链/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">js(原型-实例-原型链)</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -273,7 +273,7 @@
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="nginx-epoll" data-title="nginx_epoll" data-url="http://www.flydream.org/2015/10/05/nginx-epoll/"></div>
+	<div class="ds-thread" data-thread-key="js-事件" data-title="js_事件" data-url="http://www.flydream.org/2015/10/18/js-事件/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
