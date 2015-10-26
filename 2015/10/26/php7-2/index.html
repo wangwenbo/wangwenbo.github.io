@@ -5,22 +5,16 @@
   
   <title>php7_2 | Web PHP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。
-对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:
-12345678910111213">
+  <meta name="description" content="【原文链接】（http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="php7_2">
 <meta property="og:url" content="http://www.flydream.org/2015/10/26/php7-2/index.html">
 <meta property="og:site_name" content="Web PHP">
-<meta property="og:description" content="本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。
-对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:
-12345678910111213">
-<meta property="og:updated_time" content="2015-10-26T23:50:39.000Z">
+<meta property="og:description" content="【原文链接】（http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一">
+<meta property="og:updated_time" content="2015-10-26T23:55:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php7_2">
-<meta name="twitter:description" content="本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。
-对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:
-12345678910111213">
+<meta name="twitter:description" content="【原文链接】（http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一">
   
     <link rel="alternative" href="/atom.xml" title="Web PHP" type="application/atom+xml">
   
@@ -234,7 +228,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
+        <p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）</a><br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
 <p>对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_refcounted&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> refcount;</span><br><span class="line">	<span class="keyword">union</span>&#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				<span class="keyword">uint16_t</span>   gc_info)</span><br><span class="line">		&#125;v;</span><br><span class="line">		<span class="keyword">uint32_t</span> typeinfo;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>zend_refcounted中的成员变量有引用次数的refcount，变量类型的type、用于GC的gc_info和类型指定flags。</p>
