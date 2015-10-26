@@ -15,7 +15,7 @@
 <meta property="og:description" content="本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。
 对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:
 12345678910111213">
-<meta property="og:updated_time" content="2015-10-25T23:23:10.000Z">
+<meta property="og:updated_time" content="2015-10-26T23:50:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php7_2">
 <meta name="twitter:description" content="本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。
@@ -242,8 +242,15 @@
 <h4 id="Strings">Strings</h4><p>PHP 7中通过zend_string来表现字符串，zend_string的定义如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_string&#123;</span><br><span class="line">	zend_refcouned gc;</span><br><span class="line">	zend_ulong     h;     <span class="comment">/* hash value */</span></span><br><span class="line">	<span class="keyword">size_t</span>         len;</span><br><span class="line">	<span class="keyword">char</span>           val[<span class="number">1</span>].</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>除了引用计数这个在前一段落提到的成员变量之外，zend_string还包含一个hash值h和一个表示字符串长度的len以及字符串值val（这里申明的是一个元素大小的字符数组，是不是觉得奇怪）。缓存hash值h是为了避免在hashtable中多次查找时重复计算。</p>
-<p>未完待续。。。。</p>
-
+<p>假如你对“dirty C hacks”并不熟悉，那么成员变量val就会显得很奇怪。val是一个只有一个字符大小的数组，但是却用来存储一个完整地string类型值（大多数情况下，这个值都不值在一个字符）。其实这是运用了“struct hack”的技术：申明一个只含有一个元素的数组，当在创建一个zend_string时我们用它的val成员变量来存储一个更长的字符串。</p>
+<p>这种新的string类型和常规的C strings相比是有一些优势的：首先，字符串长度直接嵌入其中。这就意味着字符串的长度不需要到处传递。其次，因为包含了zend_refcounted,所以可以在不使用zvals的情况下实现字符串的多处共享。尤其对共享hashtable键值尤其重要。</p>
+<p>但是新的string类型也有缺点：虽然通过zend_string(str-&gt;val)可以轻易地取得c字符串，但是反之则不行，我们只能复制一份新值到新分配的zend_string中。当我们遍历处理字符串时就会造成不便（常量字符串由C源码生成）。</p>
+<p>字符串的flags类型（它们存储在GC flags域中）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">define</span> IS_STR_PERSISTENT  (<span class="number">1</span>&lt;&lt;<span class="number">0</span>) <span class="comment">/* allocated using malloc */</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">define</span> IS_STR_INTERNED    (<span class="number">1</span>&lt;&lt;<span class="number">1</span>) <span class="comment">/* interned string */</span></span></span><br><span class="line"><span class="preprocessor">#<span class="keyword">define</span> IS_STR_PERMANENT   (<span class="number">1</span>&lt;&lt;<span class="number">2</span>) <span class="comment">/* interned string surving request boundary */</span></span></span><br></pre></td></tr></table></figure>
+<p>Persistent strings是通过操作系统分配内存而不是通过zend的内存管理器(ZMM)，也因为这样它的生命周期长于一次请求。<br>这之前的PHP 5中，我们要使用persistent string需要先将它复制到ZMM，现在通过指定flag就可以在zvals直接使用。</p>
+<p>Interned strings在一次请求结束之前都不会被销毁，也就因为这样所以它不需要引用计数。这种类型的字符串是不可以重复，所以每次创建一个新的之前engine都会先检查其内容是否已存在。在PHP源码中出现的字符串(string literals,变量和函数名等)通常都是内部字符串。Permanent strings在一次请求开始之前就被创建的interned strings。当一般interned strings在一次请求结束后都被销毁后，permanent strings依然存在。</p>
+<p>假如opache是interned strings，它就会被存储在共享内存(SHM)中，可以在PHP的工作进程间共享。这种情形下，permanent strings的概念也就无所谓啦，因为它们永远不会被销毁。</p>
+<h4 id="Arrays">Arrays</h4>
       
     </div>
     
