@@ -742,8 +742,8 @@
 <p>本质上讲，PHP的数组就是一个有序的词典，一个有序的键/值对列表，而这种key/value的映射关系是通过hashtable来实现的。</p>
 <p>hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到两个相同的值，所以hashtable的实现还要解决哈希冲突。</p>
 <p>哈希冲突的基本解决办法有两种：一种是开放地址，另一种是链式法；PHP中使用了第二种，下面直接描述PHP中的hashtable是如何实现的，新一代PHP引擎的hashtable有什么不同，为什么更高效？</p>
-<h4 id="hashtable在PHP中5的实现">hashtable在PHP中5的实现</h4><p>下图是php5中hashtable实现的简述：<br><img src="http://chuantu.biz/t2/11/1439250546x-1566638931.png" alt="Hashtable png"></p>
-<p>如上图，a,b,c这些键值所对应的值存在“bucket”结构中，每一个bucket都是独立分配空间的，而buckets组成互相之间独立的链表来解决哈希冲突。<br>另外除此之外，还有一个链表来保存元素的顺序（如：数组中的元素顺序是它的插入顺序），数组键值“a”,“b”，“c”，它对应的链表就应该是下面这个样子：<br><img src="http://chuantu.biz/t2/11/1439332151x-954497701.png" alt="Hashtable2 png"><br>这中hashtable实现在内存使用和执行低效的原因有以下几个原因：</p>
+<h4 id="hashtable在PHP中5的实现">hashtable在PHP中5的实现</h4><p>下图是php5中hashtable实现的简述：<br><img src="http://wangwenbo.github.io/img/basic_hashtable.svg" alt="Hashtable png"></p>
+<p>如上图，a,b,c这些键值所对应的值存在“bucket”结构中，每一个bucket都是独立分配空间的，而buckets组成互相之间独立的链表来解决哈希冲突。<br>另外除此之外，还有一个链表来保存元素的顺序（如：数组中的元素顺序是它的插入顺序），数组键值“a”,“b”，“c”，它对应的链表就应该是下面这个样子：<br><img src="http://wangwenbo.github.io/img/ordered_hashtable.svg" alt="Hashtable2 png"><br>这中hashtable实现在内存使用和执行低效的原因有以下几个原因：</p>
 <ol>
 <li>bucket 要独立分配。每次分配都要额外占用内存。同时独立分配就意味着bucket的地址相对分散，影响缓存效率。</li>
 <li>zvals 也要单独分配而且 每一个bucket要保存同一个zval的指针。<h4 id="zval在PHP7中的实现">zval在PHP7中的实现</h4>在介绍新的hahstable之前，先来看一下新的zval结构：</li>
