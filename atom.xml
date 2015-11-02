@@ -5,7 +5,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org//"/>
-  <updated>2015-10-26T23:55:51.000Z</updated>
+  <updated>2015-11-02T23:30:35.000Z</updated>
   <id>http://www.flydream.org//</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.flydream.org/2015/10/26/php7-2/"/>
     <id>http://www.flydream.org/2015/10/26/php7-2/</id>
     <published>2015-10-25T22:27:08.000Z</published>
-    <updated>2015-10-26T23:55:51.000Z</updated>
+    <updated>2015-11-02T23:30:35.000Z</updated>
     <content type="html"><![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）</a><br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
 <p>对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_refcounted&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> refcount;</span><br><span class="line">	<span class="keyword">union</span>&#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				<span class="keyword">uint16_t</span>   gc_info)</span><br><span class="line">		&#125;v;</span><br><span class="line">		<span class="keyword">uint32_t</span> typeinfo;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -37,7 +37,14 @@
 <p>Persistent strings是通过操作系统分配内存而不是通过zend的内存管理器(ZMM)，也因为这样它的生命周期长于一次请求。<br>这之前的PHP 5中，我们要使用persistent string需要先将它复制到ZMM，现在通过指定flag就可以在zvals直接使用。</p>
 <p>Interned strings在一次请求结束之前都不会被销毁，也就因为这样所以它不需要引用计数。这种类型的字符串是不可以重复，所以每次创建一个新的之前engine都会先检查其内容是否已存在。在PHP源码中出现的字符串(string literals,变量和函数名等)通常都是内部字符串。Permanent strings在一次请求开始之前就被创建的interned strings。当一般interned strings在一次请求结束后都被销毁后，permanent strings依然存在。</p>
 <p>假如opache是interned strings，它就会被存储在共享内存(SHM)中，可以在PHP的工作进程间共享。这种情形下，permanent strings的概念也就无所谓啦，因为它们永远不会被销毁。</p>
-<h4 id="Arrays">Arrays</h4>]]></content>
+<h4 id="Arrays">Arrays</h4><p>因为在之前的文章已经提过新数组的实现，所以这里我就不在详细阐述它。也不再具体的去介绍最近的变化，因为基本原理还是一样的。</p>
+<p>这里我仅仅说一个和新数组有关的概念，即Immutable arrays，这个概念在之前的hashtable文章中并没有涉及到。这样的数组相当于内部字符串，所以它们没有引用计数而且生命周期直到一次请求结束或者更长。</p>
+<p>考虑到内存管理，immutable arrays只有当opcache开启时才可使用。来看一下它到底有什么不同，思考一下面的代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span> &lt; <span class="number">1000000</span>;++<span class="variable">$i</span>)&#123;</span><br><span class="line">	<span class="variable">$array</span>[]=[<span class="string">'foo'</span>];</span><br><span class="line">&#125;</span><br><span class="line">var_dump(memory_get_usage());</span><br></pre></td></tr></table></figure>
+<p>开启opcache时内存占用32M，但是没有opcache内存占用390M，这是因为$array的每个元素都要从新复制一份。这里没有使用引用计数而是重新复制的原因是literal VM operands 通过这样来避免共享内存发生。我希望未来我们可以在不用opcache的情况下更好地处理这种情况。</p>
+<h4 id="Objects_in_PHP_5">Objects in PHP 5</h4><p>在思考PHP 7的对象实现之前，我们先来了解一下它在PHP 5中是如何工作的以及它的一些低效的地方：zval自身被用来去存储zend_object_value:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_value&#123;</span><br><span class="line">	zend_object_handle handle;</span><br><span class="line">	<span class="keyword">const</span> zend_object_handlers *handlers;</span><br><span class="line">&#125;zend_object_value;</span><br></pre></td></tr></table></figure>
+]]></content>
     <summary type="html">
     <![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）" target="_blank" rel="external">htt]]>
     </summary>
@@ -233,7 +240,7 @@
     <link href="http://www.flydream.org/2015/08/11/hashtable/"/>
     <id>http://www.flydream.org/2015/08/11/hashtable/</id>
     <published>2015-08-10T22:21:38.000Z</published>
-    <updated>2015-10-27T23:54:38.000Z</updated>
+    <updated>2015-11-02T23:46:39.000Z</updated>
     <content type="html"><![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
 <p>本质上讲，PHP的数组就是一个有序的词典，一个有序的键/值对列表，而这种key/value的映射关系是通过hashtable来实现的。</p>
 <p>hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到两个相同的值，所以hashtable的实现还要解决哈希冲突。</p>

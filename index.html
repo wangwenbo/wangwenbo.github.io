@@ -234,7 +234,14 @@
 <p>Persistent strings是通过操作系统分配内存而不是通过zend的内存管理器(ZMM)，也因为这样它的生命周期长于一次请求。<br>这之前的PHP 5中，我们要使用persistent string需要先将它复制到ZMM，现在通过指定flag就可以在zvals直接使用。</p>
 <p>Interned strings在一次请求结束之前都不会被销毁，也就因为这样所以它不需要引用计数。这种类型的字符串是不可以重复，所以每次创建一个新的之前engine都会先检查其内容是否已存在。在PHP源码中出现的字符串(string literals,变量和函数名等)通常都是内部字符串。Permanent strings在一次请求开始之前就被创建的interned strings。当一般interned strings在一次请求结束后都被销毁后，permanent strings依然存在。</p>
 <p>假如opache是interned strings，它就会被存储在共享内存(SHM)中，可以在PHP的工作进程间共享。这种情形下，permanent strings的概念也就无所谓啦，因为它们永远不会被销毁。</p>
-<h4 id="Arrays">Arrays</h4>
+<h4 id="Arrays">Arrays</h4><p>因为在之前的文章已经提过新数组的实现，所以这里我就不在详细阐述它。也不再具体的去介绍最近的变化，因为基本原理还是一样的。</p>
+<p>这里我仅仅说一个和新数组有关的概念，即Immutable arrays，这个概念在之前的hashtable文章中并没有涉及到。这样的数组相当于内部字符串，所以它们没有引用计数而且生命周期直到一次请求结束或者更长。</p>
+<p>考虑到内存管理，immutable arrays只有当opcache开启时才可使用。来看一下它到底有什么不同，思考一下面的代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span> &lt; <span class="number">1000000</span>;++<span class="variable">$i</span>)&#123;</span><br><span class="line">	<span class="variable">$array</span>[]=[<span class="string">'foo'</span>];</span><br><span class="line">&#125;</span><br><span class="line">var_dump(memory_get_usage());</span><br></pre></td></tr></table></figure>
+<p>开启opcache时内存占用32M，但是没有opcache内存占用390M，这是因为$array的每个元素都要从新复制一份。这里没有使用引用计数而是重新复制的原因是literal VM operands 通过这样来避免共享内存发生。我希望未来我们可以在不用opcache的情况下更好地处理这种情况。</p>
+<h4 id="Objects_in_PHP_5">Objects in PHP 5</h4><p>在思考PHP 7的对象实现之前，我们先来了解一下它在PHP 5中是如何工作的以及它的一些低效的地方：zval自身被用来去存储zend_object_value:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_value&#123;</span><br><span class="line">	zend_object_handle handle;</span><br><span class="line">	<span class="keyword">const</span> zend_object_handlers *handlers;</span><br><span class="line">&#125;zend_object_value;</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
