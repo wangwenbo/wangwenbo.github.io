@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>nginx和php的pfm | Web PHP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="nginx与pfmnginx与php的结合，就是静态网页由nginx来解析，而动态内容则交给php来处理。这里采用的nginx的FastCGI模块和PHP的php-fpm来共同工作。
+1.nginx的nginx.conf在nginx的配置文件nginx.conf中，开启和修改一下配置项：
+123456789101112# pass the PHP scritpts to FastCGI serve">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx和php的pfm">
+<meta property="og:url" content="http://www.flydream.org/2015/11/22/ngigx-pfm/index.html">
+<meta property="og:site_name" content="Web PHP">
+<meta property="og:description" content="nginx与pfmnginx与php的结合，就是静态网页由nginx来解析，而动态内容则交给php来处理。这里采用的nginx的FastCGI模块和PHP的php-fpm来共同工作。
+1.nginx的nginx.conf在nginx的配置文件nginx.conf中，开启和修改一下配置项：
+123456789101112# pass the PHP scritpts to FastCGI serve">
+<meta property="og:updated_time" content="2015-11-22T04:07:45.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx和php的pfm">
+<meta name="twitter:description" content="nginx与pfmnginx与php的结合，就是静态网页由nginx来解析，而动态内容则交给php来处理。这里采用的nginx的FastCGI模块和PHP的php-fpm来共同工作。
+1.nginx的nginx.conf在nginx的配置文件nginx.conf中，开启和修改一下配置项：
+123456789101112# pass the PHP scritpts to FastCGI serve">
+  
+    <link rel="alternative" href="/atom.xml" title="Web PHP" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="null" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">阳关冰上</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						<div class="icon-wrap icon-link hide" data-idx="2">
+							<div class="loopback_l"></div>
+							<div class="loopback_r"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						<li>友情链接</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="/#" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="/#" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="/#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="/#" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/nginx-pfm-高并发-负载均衡/" style="font-size: 10px;">nginx pfm 高并发 负载均衡</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php7-string-array-object/" style="font-size: 10px;">php7 string array object</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/web-cache/" style="font-size: 10px;">web cache</a> <a href="/tags/原型-原型链-继承/" style="font-size: 10px;">原型 原型链 继承</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a> <a href="/tags/进程间通信/" style="font-size: 10px;">进程间通信</a>
+					</div>
+				</section>
+				
+				
+				
+				<section class="switch-part switch-part3">
+					<div id="js-friends">
+					
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">奥巴马的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">卡卡的美丽传说</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">本泽马的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">吉格斯的博客</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">习大大大不同</a>
+			        
+			          <a target="_blank" class="main-nav-link switch-friends-link" href="http://localhost:4000/">托蒂的博客</a>
+			        
+			        </div>
+				</section>
+				
+
+				
+				
+				<section class="switch-part switch-part4">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">阳关冰上</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="null" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">阳关冰上</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="/#" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="/#" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="/#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="/#" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-ngigx-pfm" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/11/22/ngigx-pfm/" class="article-date">
+  	<time datetime="2015-11-22T02:06:29.000Z" itemprop="datePublished">2015-11-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      nginx和php的pfm
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx-pfm-高并发-负载均衡/">nginx pfm 高并发 负载均衡</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="nginx与pfm">nginx与pfm</h1><p>nginx与php的结合，就是静态网页由nginx来解析，而动态内容则交给php来处理。这里采用的nginx的FastCGI模块和PHP的php-fpm来共同工作。</p>
+<h3 id="1-nginx的nginx-conf">1.nginx的nginx.conf</h3><p>在nginx的配置文件nginx.conf中，开启和修改一下配置项：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># pass the PHP scritpts to FastCGI server listening on 127.0.0.1.9000</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">location ~\.php$&#123;</span><br><span class="line">	root		  html;</span><br><span class="line">	fastcgi_pass  <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">9100</span></span><br><span class="line">	fastcgi_index index.php</span><br><span class="line">	fastcgi_param SCRIPT_FIFLNAME <span class="variable">$document_root</span><span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">	fastcig_param PATH_INFO <span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">	<span class="keyword">include</span>       fastcgi_params;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述fastcgi指令的作用：<br>fastcgi_pass:指定服务器监听的地址和端口；<br>fastcgi_param:指定传递到服务器的参数，其中SCRIPT_FILENAME 就是php要执行的脚本的完整路径，脚本的名字存储在$fastcgi_script_name中；<br>fastcgi_index:如果URI的请求以/结尾，那么index.php就会默认补充在/之后，也可以看做默认值。<br>这些只是fastcgi指令中很少的一部分，还有更多关于负载均衡、缓存等的指令。</p>
+<h3 id="2-php-fpm">2.php-fpm</h3><p>对php-fpm的进程控制，通过信号量实现：<br>1.SIGINT、SIGTERM:立刻终止进程<br>2.SIGQUIT:平滑终止进程<br>3.SIGUSR1:重新打开日志文件<br>4.SIGUSR2:平滑重载所有worker进程并重新载入配置和二进制模块</p>
+<p>命令如下：<br>kill -SIGINT ‘cat /usr/local/php5/var/run/php-fpm.pid’</p>
+<p>第一次打开pfm，可以在php的安装目录的/usr/local/php5/sbin 下执行./php-fpm,也可以通过init脚本启动，在php的源码sapi/fpm/init.d.php-fpm 是pfm的init脚本。也可把它复制到/etc/init.d/php-fpm下，然后改变权限 chmod 755 /etc/init.d/php-fpm,最后通过执行chkconfig –add php-fom  和chkconfig –level 35 php-fpm on。<br>我们就可以通过server php-fpm （start|stop|force_quit|restart|reload）来管理啦。</p>
+<h1 id="nginx的高并发和负载均衡">nginx的高并发和负载均衡</h1><h3 id="1-epoll">1.epoll</h3><p>高并发下建立的tcp连接，在同一时刻保持活跃状态的可能只有一少部分。这种情况下，将所有连接告诉操作系统，由操作系统全部遍历找出其中获取的连接，显然会造成资源浪费。epoll则把select或者poll更加细分，分三部分：epoll_create创建epoll对象，之后通过epoll_ctl向epoll对象添加全部连接，最后调用epoll_wait收集处于活跃的连接。<br>epoll怎么知道哪些连接处于活跃状态？epoll中的所有事件都会与设备驱动程序建立回调关系，即当有事件发生时会调用回调方法将这样的事件写入rdllist这个双向链表中。epoll_wait会去这个双向链表中，获取处于活跃状态的事件。通过这种机制实现了epoll的高效。</p>
+<h3 id="2-nginx的“惊群”与负载均衡">2.nginx的“惊群”与负载均衡</h3><p>nginx中一个mater主进程和多个worker进程一起工作。当一个请求到来时，多个worker进程会去争夺，最先执行accept的可以成功机建立连接。但是这引起了多余的进程切换，增加了系统开销，即“惊群问题”。<br>nginx的解决办法：加accept_mutex锁，只用调用ngx_trylock_accept_mutex成功后，当前worker进程才能去处理。<br>接着的问题是，如果当前worker进程有很多要处理的事件事件，它一直不释放那么其他worker进程就无法工作，有些请求可能就不能达到及时响应，没有达到多个worker的目的。所以nginx会有两个post事件的队列，它们分别是ngx_posted_accept_events和ngx_posted_events，其中第一个负责处理新来的事件，处理完后立马释放accpet_mutex锁，第二用来处理普通事件。<br>问题到这里还没有结束，如果，每次都是同一个进程抢到锁，倒是它已经达到了连接上限。那么这些请求它是处理不了的，这怎么办？<br>nginx的worker进程在抢accept_mutex锁之前，首先判断ngx_accept_disabled是否&gt;0,只有小于零才会去抢锁。ngx_accept_mutex = 总连接数/8-空闲连接数。<br>所以nginx的负载均衡是靠两个post队列和ngx_accept_distabled来实现的。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/11/15/pcntl-thread/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">pcntl_thread</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="ngigx-pfm" data-title="nginx和php的pfm" data-url="http://www.flydream.org/2015/11/22/ngigx-pfm/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2015 阳关冰上
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
