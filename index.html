@@ -112,7 +112,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/nginx-pfm-高并发-负载均衡/" style="font-size: 10px;">nginx pfm 高并发 负载均衡</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php7-string-array-object/" style="font-size: 10px;">php7 string array object</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/web-cache/" style="font-size: 10px;">web cache</a> <a href="/tags/原型-原型链-继承/" style="font-size: 10px;">原型 原型链 继承</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a> <a href="/tags/进程间通信/" style="font-size: 10px;">进程间通信</a>
+						<a href="/tags/PHP-strstr-stristr-substr/" style="font-size: 10px;">PHP strstr,stristr,substr</a> <a href="/tags/PHP7-ZVAL/" style="font-size: 10px;">PHP7 ZVAL</a> <a href="/tags/PHP内核-变量/" style="font-size: 10px;">PHP内核 变量</a> <a href="/tags/PHP内核-变量-作用域-生命周期/" style="font-size: 10px;">PHP内核 变量 作用域 生命周期</a> <a href="/tags/array-change-key-case-array-chunk/" style="font-size: 10px;">array_change_key_case,array_chunk</a> <a href="/tags/array-merge-array-merge-recursice-array-replace-recursice-array-replace/" style="font-size: 10px;">array_merge,array_merge_recursice,array_replace_recursice,array_replace</a> <a href="/tags/array-pop-array-shift/" style="font-size: 10px;">array_pop,array_shift</a> <a href="/tags/nginx-pfm-高并发-负载均衡/" style="font-size: 10px;">nginx pfm 高并发 负载均衡</a> <a href="/tags/php7-hashtable/" style="font-size: 10px;">php7 hashtable</a> <a href="/tags/php7-string-array-object/" style="font-size: 10px;">php7 string array object</a> <a href="/tags/php扩展结构/" style="font-size: 10px;">php扩展结构</a> <a href="/tags/web-cache/" style="font-size: 10px;">web cache</a> <a href="/tags/原型-原型链-继承/" style="font-size: 10px;">原型 原型链 继承</a> <a href="/tags/数组值value-arsort-asort-数组key排序-krsort-ksort/" style="font-size: 10px;">数组值value:arsort asort;数组key排序:krsort ksort</a> <a href="/tags/进程间通信/" style="font-size: 10px;">进程间通信</a>
 					</div>
 				</section>
 				
@@ -191,6 +191,63 @@
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-array-change-key-case-array-chunk" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/11/27/array-change-key-case-array-chunk/" class="article-date">
+  	<time datetime="2015-11-26T23:27:16.000Z" itemprop="datePublished">2015-11-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/27/array-change-key-case-array-chunk/">PHP内核学习 --- 数组函数（键值大小写转换和切分）</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="1-PHP_数组元素键值大小写转换">1.PHP 数组元素键值大小写转换</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">	PHP_FUNCTION(array_change_key_case)</span><br><span class="line">&#123;</span><br><span class="line">	array_init_size(return_value, zend_hash_num_elements(Z_ARRVAL_P(<span class="built_in">array</span>))); <span class="comment">//初始化返回值</span></span><br><span class="line"></span><br><span class="line">	zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(<span class="built_in">array</span>), &amp;pos);</span><br><span class="line">	<span class="keyword">while</span> (zend_hash_get_current_data_ex(Z_ARRVAL_P(<span class="built_in">array</span>), (<span class="keyword">void</span> **)&amp;entry, &amp;pos) == SUCCESS) &#123;</span><br><span class="line">		<span class="preprocessor">###这里添加索引，新数组每个元素和原来数组的元素共用同一个zval,符合写时复制的机制</span></span><br><span class="line">		zval_add_ref(entry);  </span><br><span class="line"></span><br><span class="line">		<span class="keyword">switch</span> (zend_hash_get_current_key_ex(Z_ARRVAL_P(<span class="built_in">array</span>), &amp;string_key, &amp;str_key_len, &amp;num_key, <span class="number">0</span>, &amp;pos)) &#123;</span><br><span class="line">		   <span class="preprocessor">###判断数组元素的键值是字符串还是数组下标，通过判断Buckets中的nKeyLength是否有值来判断；如果为数字下标，则nKeyLength无值</span></span><br><span class="line">			<span class="keyword">case</span> HASH_KEY_IS_LONG: </span><br><span class="line">				zend_hash_index_update(Z_ARRVAL_P(return_value), num_key, entry, <span class="keyword">sizeof</span>(entry), <span class="literal">NULL</span>);</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">case</span> HASH_KEY_IS_STRING:</span><br><span class="line">				new_key = estrndup(string_key, str_key_len - <span class="number">1</span>);</span><br><span class="line">				<span class="keyword">if</span> (change_to_upper) &#123;</span><br><span class="line">					php_strtoupper(new_key, str_key_len - <span class="number">1</span>);</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					php_strtolower(new_key, str_key_len - <span class="number">1</span>);</span><br><span class="line">				&#125;</span><br><span class="line">				zend_hash_update(Z_ARRVAL_P(return_value), new_key, str_key_len, entry, <span class="keyword">sizeof</span>(entry), <span class="literal">NULL</span>);</span><br><span class="line">				efree(new_key);</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="preprocessor">###移至下一个元素</span></span><br><span class="line">		zend_hash_move_forward_ex(Z_ARRVAL_P(<span class="built_in">array</span>), &amp;pos);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-PHP_数组切分">2.PHP 数组切分</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">PHP_FUNCTION(array_chunk)</span><br><span class="line">&#123;</span><br><span class="line">.........</span><br><span class="line"></span><br><span class="line">array_init_size(return_value, ((num_in - <span class="number">1</span>) / size) + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(input), &amp;pos);</span><br><span class="line"><span class="keyword">while</span> (zend_hash_get_current_data_ex(Z_ARRVAL_P(input), (<span class="keyword">void</span>**)&amp;entry, &amp;pos) == SUCCESS) &#123;</span><br><span class="line">	<span class="preprocessor">### 创建chunk，其中元素个数=size</span></span><br><span class="line">	<span class="keyword">if</span> (!chunk) &#123;</span><br><span class="line">		MAKE_STD_ZVAL(chunk);</span><br><span class="line">		array_init_size(chunk, size);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	zval_add_ref(entry);</span><br><span class="line">	<span class="preprocessor">### 保留键值</span></span><br><span class="line">	<span class="keyword">if</span> (preserve_keys) &#123;</span><br><span class="line">		key_type = zend_hash_get_current_key_ex(Z_ARRVAL_P(input), &amp;str_key, &amp;str_key_len, &amp;num_key, <span class="number">0</span>, &amp;pos);</span><br><span class="line">		<span class="keyword">switch</span> (key_type) &#123;</span><br><span class="line">			<span class="keyword">case</span> HASH_KEY_IS_STRING:</span><br><span class="line">				add_assoc_zval_ex(chunk, str_key, str_key_len, *entry);</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			<span class="keyword">default</span>:</span><br><span class="line">				add_index_zval(chunk, num_key, *entry);</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;  <span class="preprocessor">### 数字下标 新增元素</span></span><br><span class="line">		add_next_index_zval(chunk, *entry);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="preprocessor">### chunk已经到达要切分的大小，就放入返回值，返回值是数字数组</span></span><br><span class="line">	<span class="keyword">if</span> (!(++current % size)) &#123;</span><br><span class="line">		add_next_index_zval(return_value, chunk);</span><br><span class="line">		chunk = <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	zend_hash_move_forward_ex(Z_ARRVAL_P(input), &amp;pos);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">	<span class="preprocessor">### 收尾工作 无法整除时最后一个chunk的大小&lt;size</span></span><br><span class="line">	<span class="keyword">if</span> (chunk) &#123;</span><br><span class="line">	add_next_index_zval(return_value, chunk);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>add_assoc_zval_ex和add_index_zval 区别就是元素键值是字符还是数字。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/array-change-key-case-array-chunk/">array_change_key_case,array_chunk</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
   
     <article id="post-ngigx-pfm" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -751,82 +808,6 @@
       
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP-strstr-stristr-substr/">PHP strstr,stristr,substr</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-  
-    <article id="post-ext-struct" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/25/ext-struct/" class="article-date">
-  	<time datetime="2015-08-24T22:43:57.000Z" itemprop="datePublished">2015-08-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/25/ext-struct/">PHP 内核学习 --- 扩展结构</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="PHP的扩展结构">PHP的扩展结构</h3><p>通过php下源码目录下的ext_skel 工具创建一个自己的扩展 “./configure –extname=wwbext”, 下面来了解一下一个扩展的框架结构：</p>
-<p>一个扩展通常有6部分组成：<br> 1.引入头文件<br> 2.声明导出函数<br> 3.声明Zend函数块<br> 4.声明Zend模块<br> 5.实现get_module()函数<br> 6.实现导出函数</p>
-<h4 id="1-头文件">1.头文件</h4><p>在php扩展中，必须要引入一个php.h的头文件（main目录下）。它包含扩展所需要的宏和API定义。</p>
-<h4 id="2-导出函数声明">2.导出函数声明</h4><p>通过声明和实现导出函数，php脚本才能访问到我们所编写的扩展中的函数和类。<br>导出函数的声明形式如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">zif_wwbext</span><span class="params">(</span><br><span class="line">	<span class="keyword">int</span> ht,</span><br><span class="line">	zval *return_value,</span><br><span class="line">	zval *this_ptr,</span><br><span class="line">	<span class="keyword">int</span> return_value_used,</span><br><span class="line">	zend_executor_globals *executor_globals</span><br><span class="line">)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>其中导出函数5个参数的作用：<br>ht：保存扩展函数参数的个数，通过ZEND_NUM_ARGS()宏访问<br>return_value:保存扩展函数的返回值<br>this_ptr:获得扩展函数所属的对象<br>return_value_used:标识函数的返回值是否为脚本所使用，1：是 ，0：否<br>executor_globals：指向Zend引擎的全局设置,通过TSRMLS_FETCH()引用这个值</p>
-<h4 id="3-Zend函数块">3.Zend函数块</h4><p>虽然声明的导出函数，但是Zend引擎不会自动引入导出函数，这个时候我们需要zend_function_entry结构体</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_function_entry&#123;</span><br><span class="line">	<span class="keyword">char</span> *fname;</span><br><span class="line">	<span class="keyword">void</span> (*handler) (INTERNAL_FUNCTION_PARAMETERS);</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span> * func_arg_types;</span><br><span class="line">&#125;zend_function_entry;</span><br></pre></td></tr></table></figure>
-<p>成员变量的含义：<br>fname:PHP脚本里调用的函数名<br>handler：C函数句柄，在这里就是导出函数的句柄<br>func_arg_types:一个参数是否强制按引用方式传递，一般为NULL<br>Zend引擎通过zend_function_entry结构数组把导出函数引入内部</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> zend_function_entry wwbext_functions[]=&#123;</span><br><span class="line">	PHP_FE(confirm_wwbext_complied,<span class="literal">NULL</span>)</span><br><span class="line">	PHP_FE_END</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>导入大致过程：循环zend_function_entry数组，依次将函数载入内核函数表</p>
-<h4 id="4-声明Zend模块">4.声明Zend模块</h4><p>PHP的扩展信息都保存在zend_module_entry结构中，这个结构包含zend引擎需要知道的模块信息</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">tpyedef <span class="keyword">struct</span> _zend_module_entry zend_module_entry;</span><br><span class="line"><span class="keyword">struct</span> _zend_module_entry&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">short</span> size;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> zend_api;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span> zend_api;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span> zts;</span><br><span class="line">	<span class="keyword">char</span> *name;</span><br><span class="line">	zend_function_entry *functions;</span><br><span class="line">	<span class="keyword">int</span> (*module_startup_func)(INT_FUNC_ARGS);</span><br><span class="line">	<span class="keyword">int</span> (*module_shutdown_func) (SHUTDOWM_FUNC_ARGS);</span><br><span class="line">	<span class="keyword">int</span> (*request_startup_func) (INT_FUNC_ARGS);</span><br><span class="line">	<span class="keyword">int</span> (*request_shutdown_func) (SHUTDOWN_FUNC_AGGS);</span><br><span class="line">	<span class="keyword">void</span> (*info_func) (ZEND_MODULE_INFO_FUNC_ARGS);</span><br><span class="line">	<span class="keyword">char</span> *version;</span><br><span class="line">	.............</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>前四个成员通过STANDARD_MOUDLE_HEADER宏来填充；name:模块名； functions:第三部分的Zend的函数块指针；module_startup_func:模块初始化函数，可以通过宏ZEND_MINIT来启动；module_end_func:模块结束函数，对应的宏ZEND_MSHUTDOWN;request_startup_func:请求启动函数，宏ZEND_RMINIT；request_end_func:请求关闭函数，对应的宏ZEND_RSHUTDOWN，最后的versiion代表版本信息。<br>具体到我们的新扩展wwbext，结构如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">zend_moudle_entry wwbext_module_entry = &#123;</span><br><span class="line">	STANDARD_MOUDLE_HEADER,</span><br><span class="line">	<span class="string">"wwbext"</span>,</span><br><span class="line">	wwbext_functions,</span><br><span class="line">	PHP_MINIT(wwbext),</span><br><span class="line">	PHP_MSHUTDOWN(wwbext),</span><br><span class="line">	PHP_RINIT(wwext),</span><br><span class="line">	PHP_RSHUTDOWN(wwbext)</span><br><span class="line">	PHP_WWBEXT_VERSION,</span><br><span class="line">	STANDARD_MOUDLE_PROPERTIES</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="5-get_module()函数">5.get_module()函数</h4><p>当wwbext这个扩展被动态加载时回去调用get_module函数，实现过程：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">#<span class="keyword">ifdef</span> COMPILE_DL_WWBEXT</span></span><br><span class="line">ZEND_GET_MODULE(wwbext)</span><br><span class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>ZEND_GET_MODULE宏的张开如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#<span class="keyword">define</span> ZEND_GET_MOUDLE(name) \</span><br><span class="line">	ZEND_DLEXPORT zend_module_entry *get_module(void)&#123;\</span><br><span class="line">		return &amp;name##_module_entry;\</span><br><span class="line">	&#125;</span></span><br></pre></td></tr></table></figure>
-<p>通过get_module函数的zend模块指针就是第四部分的模块指针，所以PHP内核和扩展是通过get_module来通信的。</p>
-<h4 id="6-导出函数">6.导出函数</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">PHP_FUNCTION(confirm_wwbext_compiledd)&#123;</span><br><span class="line">	<span class="keyword">char</span> *arg = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">size_t</span> arg_len,len;</span><br><span class="line">	zend_string *<span class="built_in">string</span>;</span><br><span class="line">	<span class="keyword">if</span>(zend_parse_parameters(ZEND_NUM_ARGS(),<span class="string">"s"</span>,$arg,$arg_len) == FAILURE)&#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	strg = strpprintf(<span class="number">0</span>, <span class="string">"Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP."</span>, <span class="string">"wwbext"</span>, arg);</span><br><span class="line">RETURN_STR(strg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到此扩展的最后一步实现导函数，通过总结发现PHP内核和扩展通信是通过get_moduleh获取模块，而模块又是通过导出函数获取扩展内的自定义函数放入zend_function_entry数组，来完成我们的扩展函数可以在脚本中调用。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php扩展结构/">php扩展结构</a></li></ul>
 	</div>
 
       
