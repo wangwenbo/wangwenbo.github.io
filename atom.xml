@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  
   <title><![CDATA[Web PHP]]></title>
   
   <link href="/atom.xml" rel="self"/>
-  <link href="http://www.flydream.org//"/>
+  <link href="http://www.flydream.org/"/>
   <updated>2015-11-28T00:38:59.000Z</updated>
-  <id>http://www.flydream.org//</id>
+  <id>http://www.flydream.org/</id>
   
   <author>
     <name><![CDATA[阳关冰上]]></name>
