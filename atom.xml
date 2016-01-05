@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2015-12-27T07:18:56.000Z</updated>
+  <updated>2016-01-05T00:12:08.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -13,6 +13,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[PHP内核学习--curl]]></title>
+    <link href="http://www.flydream.org/2016/01/03/%E7%BD%91%E7%BB%9C%E5%87%BD%E6%95%B0-curl/"/>
+    <id>http://www.flydream.org/2016/01/03/网络函数-curl/</id>
+    <published>2016-01-03T13:28:58.000Z</published>
+    <updated>2016-01-05T00:12:08.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="curl">curl</h3><p>curl函数使我们经常用到的网络函数之一，通过这篇文章了解curl的内部原理和php的生命周期（cli）。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="preprocessor">&lt;?php</span></span><br><span class="line"><span class="variable">$cn</span> = curl_init();</span><br><span class="line">curl_setopt(<span class="variable">$cn</span>,CURLOPT_URL,<span class="string">"www.baidu.com"</span>);</span><br><span class="line"><span class="variable">$res</span> = curl_exec(<span class="variable">$cn</span>);</span><br><span class="line"><span class="variable">$info</span> n= curl_getinfo(<span class="variable">$cn</span>);</span><br><span class="line"></span><br><span class="line">print_r(<span class="variable">$res</span>);</span><br><span class="line">print_r(<span class="string">"=========\n"</span>);</span><br><span class="line">print_r(<span class="variable">$info</span>);</span><br></pre></td></tr></table></figure>
+<p>当我们以cli模式执行时，通过gdb我们可以看到内核执行过程。<br>首先，在zi_curl_inits设置断点，执行后断点处信息：zif_curl_init (ht=0, return_value=0x100eba798, return_value_ptr=0x100e854d0, this_ptr=0x0,<br>    return_value_used=1, tsrm_ls=0x100f01ae0) at ext/curl/interface.c:1950；</p>
+<p>然后，进入curl_init函数源码，step/next调试源码，执行完curl_init源码后。</p>
+<p>紧接着，执行zend_do_fcall_common_helper_SPEC (execute_data=0x100e854e8, tsrm_ls=0x100f01ae0)<br>    at Zend/zend_vm_execute.h:559</p>
+<p>最后，execute_ex (execute_data=0x100e854e8, tsrm_ls=0x100f01ae0) at Zend/zend_vm_execute.h:355， 在这里执行opline。</p>
+<p>之后的curl_exec,curl_getinfo,都重复着这个过程。</p>
+<p>。。。。未完！</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="curl">curl</h3><p>curl函数使我们经常用到的网络函数之一，通过这篇文章了解curl的内部原理和php的生命周期（cli）。</p>
+<figure class="highlight php"><table><tr><td class="gutt]]>
+    </summary>
+    
+      <category term="curl" scheme="http://www.flydream.org/tags/curl/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[生成器和mysql异步]]></title>
