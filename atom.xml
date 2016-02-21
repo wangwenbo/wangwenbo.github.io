@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-12T02:50:53.000Z</updated>
+  <updated>2016-02-13T07:53:13.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -13,6 +13,19 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[http 缓存]]></title>
+    <link href="http://www.flydream.org/2016/02/13/http-cache/"/>
+    <id>http://www.flydream.org/2016/02/13/http-cache/</id>
+    <published>2016-02-13T07:36:40.000Z</published>
+    <updated>2016-02-13T07:53:13.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[TSRM(线程安全)]]></title>
@@ -168,8 +181,8 @@
     <link href="http://www.flydream.org/2015/10/26/php7-2/"/>
     <id>http://www.flydream.org/2015/10/26/php7-2/</id>
     <published>2015-10-25T22:27:08.000Z</published>
-    <updated>2015-11-03T23:52:39.000Z</updated>
-    <content type="html"><![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）</a><br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
+    <updated>2016-02-21T13:51:17.000Z</updated>
+    <content type="html"><![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html</a> ）<br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
 <p>对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_refcounted&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> refcount;</span><br><span class="line">	<span class="keyword">union</span>&#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				<span class="keyword">uint16_t</span>   gc_info)</span><br><span class="line">		&#125;v;</span><br><span class="line">		<span class="keyword">uint32_t</span> typeinfo;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>zend_refcounted中的成员变量有引用次数的refcount，变量类型的type、用于GC的gc_info和类型指定flags。</p>
@@ -199,7 +212,7 @@
 <p>_store_object结构体中第一个成员变量object指向的是真正对象。它没有直接嵌入在zend_object_store_bucket是因为对应的大小不确定。在对象指针之后紧接着跟着三个handlers，它们负责destruction，freeing和cloning。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html）" target="_blank" rel="external">htt]]>
+    <![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http]]>
     </summary>
     
       <category term="php7 string array object" scheme="http://www.flydream.org/tags/php7-string-array-object/"/>
@@ -393,8 +406,8 @@
     <link href="http://www.flydream.org/2015/08/11/hashtable/"/>
     <id>http://www.flydream.org/2015/08/11/hashtable/</id>
     <published>2015-08-10T22:21:38.000Z</published>
-    <updated>2015-11-05T00:05:54.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
+    <updated>2016-02-21T13:49:35.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>【原文链接】（<a href="http://nikic.github.io/2014/12/22/PHPs-new-hashtable-implementation.html" target="_blank" rel="external">http://nikic.github.io/2014/12/22/PHPs-new-hashtable-implementation.html</a> ）<br>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
 <p>本质上讲，PHP的数组就是一个有序的词典，一个有序的键/值对列表，而这种key/value的映射关系是通过hashtable来实现的。</p>
 <p>hashtable的概念是简单地来讲：字符串键值通过哈希函数得到一个数字，而这个数字是一个常规数组的下标。但是两个不同的键值可能经过哈希函数后得到两个相同的值，所以hashtable的实现还要解决哈希冲突。</p>
 <p>哈希冲突的基本解决办法有两种：一种是开放地址，另一种是链式法；PHP中使用了第二种，下面直接描述PHP中的hashtable是如何实现的，新一代PHP引擎的hashtable有什么不同，为什么更高效？</p>
@@ -426,8 +439,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span></span><br><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i&lt; ht-&gt;nUumhashbiaoUsed;++i)&#123;</span><br><span class="line">	Bucket *b = &amp;ht-&gt;arData[i];</span><br><span class="line">	<span class="keyword">if</span>(Z_ISUNDEF(b-&gt;val)) <span class="keyword">continue</span>;</span><br><span class="line">	<span class="comment">//处理Bucket</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>本文将概述hashtable在php7的实现，和为什么新的hashtable会更加高效。</p>
-<p>本质上讲，PHP]]>
+    <![CDATA[<h3 id="PHP7_HashTable"><strong>PHP7</strong> <strong>HashTable</strong></h3><p>【原文链接】（<a href="http://nikic.github.io/2014/12/22/PHPs-new-h]]>
     </summary>
     
       <category term="php7 hashtable" scheme="http://www.flydream.org/tags/php7-hashtable/"/>
@@ -439,8 +451,8 @@
     <link href="http://www.flydream.org/2015/08/09/php7-1/"/>
     <id>http://www.flydream.org/2015/08/09/php7-1/</id>
     <published>2015-08-09T13:03:49.000Z</published>
-    <updated>2015-11-04T23:56:00.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="PHP7_变量的内核实现_-Part_1">PHP7 变量的内核实现 -Part 1</h3><p>【原文链接】（<a href="http://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html）" target="_blank" rel="external">http://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html）</a><br>我的上一篇文章描述了在PHP7中hashtable实现的改进。接下来我们来看一下PHP中变量新的实现形式。<br>因为这部分内容涉及较多的内容，所以它被分成两部分：第一部分来描述PHP5和PHP7在zval（Zend value）实现上的不同之处，同时也会涉及引用的实现。第二部分将会详细地探究一些类型的变量的实现，如string，object等变。</p>
+    <updated>2016-02-21T13:45:04.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="PHP7_变量的内核实现_-Part_1">PHP7 变量的内核实现 -Part 1</h3><p>【原文链接】（<a href="http://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html" target="_blank" rel="external">http://nikic.github.io/2015/05/05/Internal-value-representation-in-PHP-7-part-1.html</a> ）<br>我的上一篇文章描述了在PHP7中hashtable实现的改进。接下来我们来看一下PHP中变量新的实现形式。<br>因为这部分内容涉及较多的内容，所以它被分成两部分：第一部分来描述PHP5和PHP7在zval（Zend value）实现上的不同之处，同时也会涉及引用的实现。第二部分将会详细地探究一些类型的变量的实现，如string，object等变。</p>
 <h3 id="Zvals_in_PHP5">Zvals in PHP5</h3><p>PHP5中zval的结构体定义：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zval_struct&#123;</span><br><span class="line">	zvalue_value value;</span><br><span class="line">	zend_uint refcount_gc;</span><br><span class="line">	zend_uchar type;</span><br><span class="line">	zend_uchar is_ref_gc;</span><br><span class="line">&#125; zval;</span><br></pre></td></tr></table></figure>
 <p>正如你已经看到的，一个zval结构体由 value，type还有_gc成员组成。其中value是一个联合体，它用来存储不同的变量值。</p>
@@ -591,22 +603,24 @@
     <link href="http://www.flydream.org/2015/08/08/varlifttime/"/>
     <id>http://www.flydream.org/2015/08/08/varlifttime/</id>
     <published>2015-08-08T08:44:32.000Z</published>
-    <updated>2015-08-08T12:32:01.000Z</updated>
+    <updated>2016-02-21T13:43:55.000Z</updated>
     <content type="html"><![CDATA[<h3 id="作用域_生命周期"><strong>作用域</strong> <strong>生命周期</strong></h3><p>变量的作用域本质是一块代码区域，在这个区域内可以访问某个具体的变量，超出这个区域后，变量就无法被访问到。</p>
 <h4 id="全局变量和局部变量">全局变量和局部变量</h4><p>全局变量是在整个程序中任何地方随意调用的变量， 在PHP中，除了声明在函数体内的普通变量均为全局变量，在函数体内则可以通过global语句来声明。 相对于全局变量，局部变量的作用域是程序中的部分代码（如函数中），而不是程序的全部。</p>
-<pre><code><span class="php"><span class="preprocessor">&lt;?php</span>
-    <span class="function"><span class="keyword">function</span> <span class="title">scope</span><span class="params">()</span></span>{
-        <span class="variable">$liftcycle</span> = <span class="string">"wang"</span>;
-    }
-<span class="preprocessor">?&gt;</span></span>
-</code></pre><p>变量的生命周期和作用域有一定的联系，如函数中的局部变量$filecycle，它的生命开始func scope的执行，结束于函数执行完毕。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">scope</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="variable">$liftcycle</span> = <span class="string">"wang"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>变量的生命周期和作用域有一定的联系，如函数中的局部变量$filecycle，它的生命开始于函数scope的执行，结束于函数执行完毕。</p>
 <p>PHP变量的作用域是如何实现 ？全局变量和局部变量的的作用域实现有什么区别？</p>
-<p>zend引擎有一个_zend_executor_globals结构，全局变量就保存在symbol_table这个全局符号表中；active_symbol_table中保存局部变量，这些局部变量可能是来自函数或者对象的属性等；而且每个独立的函数运行时都有自己的active_symbol_table,保证作用域独立。</p>
+<p>zend引擎有一个_zend_executor_globals结构，全局变量就保存在symbol_table这个全局符号表中；active_symbol_table中保存局部变量，这些局部变量可能是来自用户自定的函数或者对象的属性等；而且每个独立的函数运行时都有自己的active_symbol_table来保证作用域互相独立。</p>
 <p>下面来看一下，_zend_execute_data (zend/zend_complie.h)的结构：</p>
-<pre><code><span class="comment"><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_execute_data &#123;    </span><br><span class="line">	<span class="keyword">struct</span> _zend_op *opline;</span><br><span class="line">	zend_function_state function_state;</span><br><span class="line">	zend_op_array *op_array;</span><br><span class="line">	zval *object;</span><br><span class="line">	HashTable *symbol_table;</span><br><span class="line">	<span class="keyword">struct</span> _zend_execute_data *prev_execute_data;</span><br><span class="line">	zval *old_error_reporting;</span><br><span class="line">	zend_bool nested;</span><br><span class="line">	zval **original_return_value;</span><br><span class="line">	zend_class_entry *current_scope;</span><br><span class="line">	zend_class_entry *current_called_scope;</span><br><span class="line">	zval *current_this;</span><br><span class="line">	<span class="keyword">struct</span> _zend_op *fast_ret; <span class="comment">/* used by FAST_CALL/FAST_RET (finally keyword) */</span></span><br><span class="line">	zval *delayed_exception;</span><br><span class="line">	call_slot *call_slots;</span><br><span class="line">	call_slot *call;</span><br><span class="line">&#125; zend_execute_data;</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>函数中的局部变量就存储在_zend_execute_data的symbol_table中，在执行当前函数的op_array时， 全局zend_executor_globals中的<em>active_symbol_table会指向当前_zend_execute_data中的</em>symbol_table。 因为每个函数调用开始时都会重新初始化EG(active_symbol_table)为NULL， 在这个函数的所有opcode的执行过程中这个全局变量会一直存在，并且所有的局部变量修改都是在它上面操作完成的，如前面的赋值操作等。 而此时，其他函数中的symbol_table会存放在栈中，将当前函数执行完并返回时，程序会将之前保存的zend_execute_data恢复， 从而其他函数中的变量也就不会被找到，局部变量的作用域就是以这种方式来实现的。 相关操作在 Zend/zend_vm_execute.h 文件中定义的execute函数中一目了然，如下所示代码：</p>
-<pre><code><span class="comment"><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">zend_vm_enter:</span><br><span class="line"><span class="comment">/* Initialize execute_data */</span></span><br><span class="line">execute_data = (zend_execute_data *)zend_vm_stack_alloc(</span><br><span class="line">    <span class="keyword">sizeof</span>(zend_execute_data) +</span><br><span class="line">    <span class="keyword">sizeof</span>(zval**) * op_array-&gt;last_var *(EG(active_symbol_table) ? <span class="number">1</span> : <span class="number">2</span>) +</span><br><span class="line">    <span class="keyword">sizeof</span>(temp_variable) * op_array-&gt;T TSRMLS_CC);</span><br><span class="line"> </span><br><span class="line">EX(symbol_table) = EG(active_symbol_table);</span><br><span class="line">EX(prev_execute_data) = EG(current_execute_data);</span><br><span class="line">EG(current_execute_data) = execute_data;</span><br></pre></td></tr></table></figure></span>
-</code></pre><p>EX宏的作用是获取结构体zend_execute_data的字段值。它的实现是:#define EX(element) execute_data-&gt;element</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">		</span><br><span class="line">   <span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_execute_data &#123;    </span><br><span class="line">	<span class="keyword">struct</span> _zend_op *opline;</span><br><span class="line">	zend_function_state function_state;</span><br><span class="line">	zend_op_array *op_array;</span><br><span class="line">	zval *object;</span><br><span class="line">	HashTable *symbol_table;</span><br><span class="line">	<span class="keyword">struct</span> _zend_execute_data *prev_execute_data;</span><br><span class="line">	zval *old_error_reporting;</span><br><span class="line">	zend_bool nested;</span><br><span class="line">	zval **original_return_value;</span><br><span class="line">	zend_class_entry *current_scope;</span><br><span class="line">	zend_class_entry *current_called_scope;</span><br><span class="line">	zval *current_this;</span><br><span class="line">	<span class="keyword">struct</span> _zend_op *fast_ret; <span class="comment">/* used by FAST_CALL/FAST_RET (finally keyword) */</span></span><br><span class="line">	zval *delayed_exception;</span><br><span class="line">	call_slot *call_slots;</span><br><span class="line">	call_slot *call;</span><br><span class="line">&#125; zend_execute_data;</span><br></pre></td></tr></table></figure>
+<p>函数中的局部变量就存储在_zend_execute_data的symbol_table中，在执行当前函数的op_array时， 全局zend_executor_globals中的<em>active_symbol_table会指向当前_zend_execute_data中的</em>symbol_table。 因为每个函数调用开始时都会重新初始化EG(active_symbol_table)为NULL， 在这个函数的所有opcode的执行过程中这个全局变量会一直存在，并且所有的局部变量修改都是在它上面操作完成的，如前面的赋值操作等。 而此时，其他函数中的symbol_table会存放在栈中，将当前函数执行完并返回时，程序会将之前保存的zend_execute_data恢复， 从而其他函数中的变量也就不会被找到，局部变量的作用域就是以这种方式来实现的。 相关操作在 Zend/zend_vm_execute.h 文件中定义的execute函数中一目了然，如下所示代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">zend_vm_enter:</span><br><span class="line"><span class="comment">/* Initialize execute_data */</span></span><br><span class="line">execute_data = (zend_execute_data *)zend_vm_stack_alloc(</span><br><span class="line">    <span class="keyword">sizeof</span>(zend_execute_data) +</span><br><span class="line">    <span class="keyword">sizeof</span>(zval**) * op_array-&gt;last_var *(EG(active_symbol_table) ? <span class="number">1</span> : <span class="number">2</span>) +</span><br><span class="line">    <span class="keyword">sizeof</span>(temp_variable) * op_array-&gt;T TSRMLS_CC);</span><br><span class="line"> </span><br><span class="line">EX(symbol_table) = EG(active_symbol_table);</span><br><span class="line">EX(prev_execute_data) = EG(current_execute_data);</span><br><span class="line">EG(current_execute_data) = execute_data;</span><br></pre></td></tr></table></figure>
+<p>EX宏的作用是获取结构体zend_execute_data的字段值。它的实现是:#define EX(element) execute_data-&gt;element</p>
+<h4 id="全局宏">全局宏</h4><ul>
+<li>EG(Executor Globals)：zend引擎内部用来追踪当前请求的处理状态，这些信息包括系统符号表，函数和类表，常量和资源类型。</li>
+<li>CG(Core Globals)：zend引擎在脚本执行和各种深入内核的执行时使用。自定义的扩展很少会使用到它。</li>
+<li>PG(PHP Globals)：php的配置 如PG(register_globals),PG(safe_mode)和PG(memory_limit)</li>
+<li>FG(FILE Globals)：大多数的文件I/或者和流处理相关的全局变量都被塞进了这个宏里。</li>
+</ul>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="作用域_生命周期"><strong>作用域</strong> <strong>生命周期</strong></h3><p>变量的作用域本质是一块代码区域，在这个区域内可以访问某个具体的变量，超出这个区域后，变量就无法被访问到。</p>
@@ -622,40 +636,21 @@
     <link href="http://www.flydream.org/2015/08/08/variableAnalysie/"/>
     <id>http://www.flydream.org/2015/08/08/variableAnalysie/</id>
     <published>2015-08-07T22:36:05.000Z</published>
-    <updated>2015-08-08T08:42:39.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="弱变量_ZVAL_HashTable"><strong>弱变量</strong>  <strong>ZVAL</strong>  <strong>HashTable</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
+    <updated>2016-02-21T13:02:01.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="弱变量_ZVAL"><strong>弱变量</strong>  <strong>ZVAL</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
 <h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变量存储结构ZVAL(Zend/zend.h)如下：</p>
-<pre><code>struct _zval_struct{
-    /<span class="keyword">*</span>变量信息<span class="keyword">*</span>/
-    zvalue_value value; /<span class="keyword">*</span>存储变量的值<span class="keyword">*</span>/
-    zend_uint refcount__gc; /<span class="keyword">*</span>引用次数<span class="keyword">*</span>/
-    zend_uchar type     /<span class="keyword">*</span>变量的类型<span class="keyword">*</span>/
-    zend_uchar is_ref__gc;  /<span class="keyword">*</span>是否引用<span class="keyword">*</span>/
-}zval;
-</code></pre><p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   <span class="keyword">struct</span> _zval_struct&#123;</span><br><span class="line">	<span class="comment">/*变量信息*/</span></span><br><span class="line">	zvalue_value value; <span class="comment">/*存储变量的值*/</span></span><br><span class="line">	zend_uint refcount__gc; <span class="comment">/*引用次数*/</span></span><br><span class="line">	zend_uchar type     <span class="comment">/*变量的类型*/</span></span><br><span class="line">	zend_uchar is_ref__gc;  <span class="comment">/*是否引用*/</span></span><br><span class="line">&#125;zval;</span><br></pre></td></tr></table></figure>
+<p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
 <h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)就是变量值实际存储的地方，zvalue_value 的结果如下：</p>
-<pre><code><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value{
-    <span class="keyword">long</span> lval;
-    <span class="keyword">double</span> dval;
-    <span class="keyword">struct</span>{
-        <span class="keyword">char</span> *val;
-        <span class="keyword">int</span> len;
-    } str;         <span class="comment">/*字符串*/</span>
-    HashTable *ht;    <span class="comment">/*数组*/</span>
-    zend_object_value obj;  <span class="comment">/*对象*/</span>
-    zend_ast *ast;    <span class="comment">/*抽象语法树*/</span>
-}zvalue_value;
-</code></pre><p>由于一个变量只能是一种类型,所以变量实际存储的结构zvalue_value,采用联合体的结构，这样可以避免浪费大量内存。<br>zvalue_value 中各个成员负责存储不同的变量，整型和布尔值在存储在zvalue_value.lval；dval存储浮点数； str存储字符串；ht 负责存储数组； obj和ast分别存储对象和语法树。</p>
-<h4 id="-array（数组）">.array（数组）</h4><p>数组在PHP是一种很强大的变量，因为PHP为数组提供了丰富的内置函数，同时还可以存储其它类型的变量。PHP数组的强大依赖于哈希表，一种高效的键值对存储结构。在PHP中，处处可见哈希表的存在，从变量的作用域到函数表(active_table)和对象等。</p>
-<h4 id="Object（对象）">Object（对象）</h4><pre><code>typedef struct <span class="number">_</span>zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span><span class="keyword">value</span>{
-    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handle handle;  <span class="comment">//对象在对象池中的索引</span>
-    zend<span class="number">_</span><span class="keyword">object</span><span class="number">_</span>handlers *handlers;
-}
-</code></pre><p>EG宏，一个全局结构体用于保存在运行时的数据。 PHP的对象只有在运行时才会被创建，其中就包括了用来保存所有被创建的对象的对象池EG(objects_store)，而handle域就是当前对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。 这个结构体及对象相关的类的结构_zend_class_entry。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value&#123;</span><br><span class="line">	<span class="keyword">long</span> lval;</span><br><span class="line">	<span class="keyword">double</span> dval;</span><br><span class="line">	<span class="keyword">struct</span>&#123;</span><br><span class="line">		<span class="keyword">char</span> *val;</span><br><span class="line">		<span class="keyword">int</span> len;</span><br><span class="line">	&#125; str;         <span class="comment">/*字符串*/</span></span><br><span class="line">	HashTable *ht;    <span class="comment">/*数组*/</span></span><br><span class="line">	zend_object_value obj;  <span class="comment">/*对象*/</span></span><br><span class="line">	zend_ast *ast;    <span class="comment">/*抽象语法树*/</span></span><br><span class="line">&#125;zvalue_value;</span><br></pre></td></tr></table></figure>
+<p>由于一个变量只能是一种类型,所以变量实际存储的结构zvalue_value,采用联合体的结构，这样可以避免浪费大量内存。<br>zvalue_value 中各个成员负责存储不同的变量，整型和布尔值在存储在zvalue_value.lval；dval存储浮点数； str存储字符串；ht 负责存储数组； obj和ast分别存储对象和语法树。</p>
+<h4 id="-array（数组）">.array（数组）</h4><p>数组在PHP是一种很强大的变量，因为PHP为数组提供了丰富的内置函数，同时还可以存储其它类型的变量。PHP数组的强大依赖于哈希表，一种高效的键值对存储结构。在PHP中，处处可见哈希表的存在，从环境变量(symbol_table)、用户自定义的类和函数(active_symbol_table)和函数表(active_table)和对象等。</p>
+<h4 id="Object（对象）">Object（对象）</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_value&#123;</span><br><span class="line">	zend_object_handle handle;  <span class="comment">//对象在对象池中的索引</span></span><br><span class="line">	zend_object_handlers *handlers;  <span class="comment">//处理对象的函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>EG宏，一个全局结构体用于保存在运行时的数据。 PHP的对象只有在运行时才会被创建，其中就包括了用来保存所有被创建的对象的对象池EG(objects_store)，而handle域就是当前对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。 这个结构体及对象相关的类的结构_zend_class_entry。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h3 id="弱变量_ZVAL_HashTable"><strong>弱变量</strong>  <strong>ZVAL</strong>  <strong>HashTable</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
-<h4]]>
+    <![CDATA[<h3 id="弱变量_ZVAL"><strong>弱变量</strong>  <strong>ZVAL</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
+<h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变]]>
     </summary>
     
       <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
