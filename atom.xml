@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-22T23:39:37.000Z</updated>
+  <updated>2016-02-22T23:50:20.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -15,28 +15,41 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[php7-2.md]]></title>
-    <link href="http://www.flydream.org/2016/02/23/php7-2-md/"/>
-    <id>http://www.flydream.org/2016/02/23/php7-2-md/</id>
-    <published>2016-02-22T23:39:37.000Z</published>
-    <updated>2016-02-22T23:39:37.000Z</updated>
-    <content type="html"></content>
-    <summary type="html">
-    
-    </summary>
-    
-  </entry>
-  
-  <entry>
     <title><![CDATA[http 缓存]]></title>
     <link href="http://www.flydream.org/2016/02/13/http-cache/"/>
     <id>http://www.flydream.org/2016/02/13/http-cache/</id>
     <published>2016-02-13T07:36:40.000Z</published>
-    <updated>2016-02-13T07:53:13.000Z</updated>
-    <content type="html"></content>
+    <updated>2016-02-22T23:50:20.000Z</updated>
+    <content type="html"><![CDATA[<p>HTTP协议缓存的目标是去除许多情况下对于发送请求的需求和去除许多情况下发送完整请求的需求。以不发送请求或减少请求传输的数据量来优化整个HTTP架构，此目标的实现可以产生如下好处：</p>
+<ul>
+<li>减少网络传输的冗余信息量</li>
+<li>缓解网络瓶颈的问题</li>
+<li>降低对原始服务器的请求量</li>
+<li>减少了传送距离，降低了因为距离而产生的时延</li>
+</ul>
+<p>缓存基本处理过程包括七个步骤。</p>
+<p>1.接收 – 缓存从网络中读取抵达的请求报文<br>2.解析 – 缓存对报文进行解析，提取出URL和各种首部<br>3.查询 – 缓存查看是否有本地副本可用，如果没有，就获取一份副本，并保存在本地<br>4.新鲜度检测 – 缓存查看已缓存副本是否足够新鲜，如果不是，就询问服务器是否有任何更新<br>5.创建响应 – 缓存会用新的首部和已缓存主体来构建一条响应报文<br>6.发送 – 缓存通过网络将响应发回给客户端<br>7.日志 – 缓存可选地创建一个日志文件条目来描述这个事务</p>
+<p>这里的缓存可以是本地客户端缓存，也可以是代理缓存之类的公共缓存。</p>
+<h4 id="HTTP缓存模型">HTTP缓存模型</h4><p>HTTP缓存可以在不依赖服务器记住有哪些缓存拥有文档副本，而实现文档的一致。这些机制称为文档过期（document expiration）和服务器再验证（server revalidation），也可以称它们为截止模型和证实模型。</p>
+<p>截止模型是HTTP请求中带上标记文档的过期时间，HTTP协议中使用如下两个字段标记过期时间：</p>
+<ul>
+<li>Expires字段 – 指定一个绝对的过期日期。</li>
+<li><p>Cache-control:max-age – 定义文档的最大使用期，从第一次生成文档到文档不再新鲜，无法使用为止，最大的合法生存时间（单位为s）<br>仅仅使用截止模型还不够，即使文档过期了，也并不意味着当前文档和原始服务器的文档不一致了。此时就到证实模型大显身手的时候了。证实模型需要询问原始服务器文档是否发生了变化。其依赖于HTTP协议的如下字段：</p>
+</li>
+<li><p>If-Modified-Since字段 – 如果从指定日期之后文档被修改了，就执行请求的方法。可以与 Last-modified服务器响应首部配合使用。它告诉服务器只有在客户端缓存了对象的副本后，又服务器对其进行了修改的情况下，才在回复中发送此对象。如果服务器对象没有修改，返回304 Not Modified。如果服务器修改了此对象，发送此对象，返回200 OK。如果服务器删除了些对象，返回404 Not Found。</p>
+</li>
+<li>If-None-Match字段 – 服务器可以为文档提供特殊的标签（ETag），如果此标签与服务器的标签不一样，就会执行请求的方法。<br>如果服务器应答中包括一个ETag，又包括一个Last-Mofidied值，则客户端在发送请求时使用两种证实机制，并且只有当两种证实机制都满足时才会返回304 Not Modified。</li>
+</ul>
+<p>缓存在新鲜度检测时，只需要计算两个值：已缓存副本的使用期和已缓存副本的新鲜生存期。</p>
+]]></content>
     <summary type="html">
-    
+    <![CDATA[<p>HTTP协议缓存的目标是去除许多情况下对于发送请求的需求和去除许多情况下发送完整请求的需求。以不发送请求或减少请求传输的数据量来优化整个HTTP架构，此目标的实现可以产生如下好处：</p>
+<ul>
+<li>减少网络传输的冗余信息量</li>
+<li>缓解网络瓶颈的问题</]]>
     </summary>
+    
+      <category term="http cache" scheme="http://www.flydream.org/tags/http-cache/"/>
     
   </entry>
   
@@ -675,6 +688,28 @@
     </summary>
     
       <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <link href="http://www.flydream.org/2015/08/03/hello-world/"/>
+    <id>http://www.flydream.org/2015/08/03/hello-world/</id>
+    <published>2015-08-03T15:13:03.000Z</published>
+    <updated>2015-08-03T15:13:03.000Z</updated>
+    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
+    </summary>
     
   </entry>
   
