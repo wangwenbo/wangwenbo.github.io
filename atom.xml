@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-13T07:53:13.000Z</updated>
+  <updated>2016-02-22T23:39:37.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -13,6 +13,19 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[php7-2.md]]></title>
+    <link href="http://www.flydream.org/2016/02/23/php7-2-md/"/>
+    <id>http://www.flydream.org/2016/02/23/php7-2-md/</id>
+    <published>2016-02-22T23:39:37.000Z</published>
+    <updated>2016-02-22T23:39:37.000Z</updated>
+    <content type="html"></content>
+    <summary type="html">
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[http 缓存]]></title>
@@ -181,7 +194,7 @@
     <link href="http://www.flydream.org/2015/10/26/php7-2/"/>
     <id>http://www.flydream.org/2015/10/26/php7-2/</id>
     <published>2015-10-25T22:27:08.000Z</published>
-    <updated>2016-02-21T13:51:17.000Z</updated>
+    <updated>2016-02-22T23:39:50.000Z</updated>
     <content type="html"><![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html</a> ）<br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
 <p>对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_refcounted&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> refcount;</span><br><span class="line">	<span class="keyword">union</span>&#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				<span class="keyword">uint16_t</span>   gc_info)</span><br><span class="line">		&#125;v;</span><br><span class="line">		<span class="keyword">uint32_t</span> typeinfo;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -206,10 +219,18 @@
 <h4 id="Objects_in_PHP_5">Objects in PHP 5</h4><p>在思考PHP 7的对象实现之前，我们先来了解一下它在PHP 5中是如何工作的以及它的一些低效的地方：zval自身被用来去存储zend_object_value:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_value&#123;</span><br><span class="line">	zend_object_handle handle;</span><br><span class="line">	<span class="keyword">const</span> zend_object_handlers *handlers;</span><br><span class="line">&#125;zend_object_value;</span><br></pre></td></tr></table></figure>
 <p>handle是对象的唯一标示，通过它来查找对象的数据。handles是一个VTable指针，它指向了对象中实现的方法。一般情况下，php中对象它们的handler table没有什么区别，但是php 扩展创建的对象它们对应handler table会有不同。这个不同类似于重载操作符。</p>
-<p>handle是“object store”的数组索引，object store作为一个元素保存在数组中。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_store_bucket&#123;</span><br><span class="line">	zend_bool_destructor_called;    <span class="comment">//销毁时调用</span></span><br><span class="line">	zend_bool valid;                <span class="comment">//是否在被使用</span></span><br><span class="line">	zend_uchar apply_count;         <span class="comment">//对象被访问的次数</span></span><br><span class="line">	<span class="keyword">union</span> _store_bucket &#123;</span><br><span class="line">		<span class="keyword">struct</span> _store_object&#123;</span><br><span class="line">			<span class="keyword">void</span> * object;</span><br><span class="line">			zend_objects_store_dtort dtor;</span><br><span class="line">			<span class="keyword">zend_objects_free_object_storage_t</span> free_storage;</span><br><span class="line">			<span class="keyword">zend_objects_store_clone_t</span> clone;</span><br><span class="line">			<span class="keyword">const</span> zend_object_handlers * handlers;</span><br><span class="line">			zend_uint refcount;</span><br><span class="line">			gc_root_buffer *buffered;</span><br><span class="line">		&#125; obj;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			<span class="keyword">int</span> next;</span><br><span class="line">		&#125;free_list;</span><br><span class="line">	&#125;bucket;</span><br><span class="line">&#125;zend_object_store_bucket;</span><br></pre></td></tr></table></figure>
-<p>这里有很多值得说的地方。前三个成员是元数据（它们的注释如上）。接下来的联合体用来区分这个bucket在哪被使用或者它只是bucket free list的一部分。对于这部内容，重点在结构体_store_object：</p>
-<p>_store_object结构体中第一个成员变量object指向的是真正对象。它没有直接嵌入在zend_object_store_bucket是因为对应的大小不确定。在对象指针之后紧接着跟着三个handlers，它们负责destruction，freeing和cloning。</p>
+<p>handle是“object store”的数组索引，”object store”作为一个元素保存在数组中,”object store”的结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_store_bucket&#123;</span><br><span class="line">	zend_bool destructor_called;    <span class="comment">//销毁时调用</span></span><br><span class="line">	zend_bool valid;                <span class="comment">//是否在被使用</span></span><br><span class="line">	zend_uchar apply_count;         <span class="comment">//对象被访问的次数</span></span><br><span class="line">	<span class="keyword">union</span> _store_bucket &#123;</span><br><span class="line">		<span class="keyword">struct</span> _store_object&#123;</span><br><span class="line">			<span class="keyword">void</span> * object;</span><br><span class="line">			zend_objects_store_dtort dtor;</span><br><span class="line">			<span class="keyword">zend_objects_free_object_storage_t</span> free_storage;</span><br><span class="line">			<span class="keyword">zend_objects_store_clone_t</span> clone;</span><br><span class="line">			<span class="keyword">const</span> zend_object_handlers * handlers;</span><br><span class="line">			zend_uint refcount;</span><br><span class="line">			gc_root_buffer *buffered;</span><br><span class="line">		&#125; obj;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			<span class="keyword">int</span> next;</span><br><span class="line">		&#125;free_list;</span><br><span class="line">	&#125;bucket;</span><br><span class="line">&#125;zend_object_store_bucket;</span><br></pre></td></tr></table></figure>
+<p>这里有很多值得说的地方。前三个成员是元数据（destructor_called:对象的析构函数是否已调用，valid:当前对象是否被调用,apply_count:这个对象被调用的次数）。接下来的联合体用来区分这个bucket正在被使用或者它只是bucket free list的一部分。对于这部内容，重点在结构体_store_object：<br>在这个联合体中结构体_store_object的使用也是很重要的：</p>
+<p>_store_object结构体中第一个成员变量object指向的是真正对象。它没有直接嵌入在object store bucket之中，是因为对象的大小不确定。在对象指针之后紧跟着三个handlers，它们负责析构，释放和克隆。尤其要注意的是对象的析构和释放是分开的两个步骤。实际上克隆从未被使用过。原因就是zend_objects_store_clone_t不是一般的对象的handlers，它们会被复制在每个独立的对象中而不是共享。</p>
+<p>在dtor,free_storage和clone三个句柄之后的是普通的对象handlers。const zend_object_handlers * handlers的目的是为了防止对象被销毁而zval却不知道。</p>
+<p>紧接着这个结构体中还包含一个引用计数，PHP 5中的zval已经存储了一个引用计数为什么这里还要再存储一个哪？对于php中简单的复制操作，zval中引用计数增加即可。但对于必须创建一个新的zval并从一个已有的zval(zend_object_value)中复制值时，这个对象就需要引用计数。这种双引用计数是PHP 5zval内部实现造成的问题。最后buffered指针指向GC root buffer，它被复制也是相似的道理。</p>
+<p>现在我们看一下真正的对象。对于用户创建的对象，它的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object &#123;</span><br><span class="line">	zend_class_entry *ce;</span><br><span class="line">	HashTable *properties;</span><br><span class="line">	zval ** properties_table;</span><br><span class="line">	HashTable *guards;</span><br><span class="line">&#125; zend_object;</span><br></pre></td></tr></table></figure>
+<p>zend_class_entry 是一个指向一个类实例。接下来的两个成员变量对应两种不同的对象属性存储方式。对于动态属性(不是在声明类时添加的而是在运行时动态加入的)则使用哈希类型的properties，它用来通过属性名映射属性值。</p>
+<p>然而对于属性声明这里还有一个优化：在编译期间每个属性被定义为一个索引而对应的属性值通过索引被存储在properties_table中。属性名和它们对应的索引映射关系则存储在这个class entry的哈希表中。这样做的目的是为每个类的对象在申请内存。而且属性对应的索引也可以在运行中被缓存。</p>
+<p>guards用于实现魔术方法的递归如__get,这里不再深入。</p>
+<p>除了之前已经提到的双引用计数问题，对一个只有一个属性的对象它也要136字节的内存（还没包含zvals）。而且还有很对的间接寻址：例如，唯一获取一个对象的属性，你首先需要找到对象的store bucket，然后是zend object，在然后是属性表和zval。如此一来就已经是至少四层间接寻址（在实际中，这个过程不少于七）。</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http]]>
@@ -654,28 +675,6 @@
     </summary>
     
       <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <link href="http://www.flydream.org/2015/08/03/hello-world/"/>
-    <id>http://www.flydream.org/2015/08/03/hello-world/</id>
-    <published>2015-08-03T15:13:03.000Z</published>
-    <updated>2015-08-03T15:13:03.000Z</updated>
-    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
-    </summary>
     
   </entry>
   
