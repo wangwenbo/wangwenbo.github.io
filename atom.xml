@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-22T23:50:20.000Z</updated>
+  <updated>2016-02-28T23:51:34.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -13,6 +13,36 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[初识redis]]></title>
+    <link href="http://www.flydream.org/2016/02/28/about-redis/"/>
+    <id>http://www.flydream.org/2016/02/28/about-redis/</id>
+    <published>2016-02-28T00:17:40.000Z</published>
+    <updated>2016-02-28T23:51:34.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="事务与WATCH">事务与WATCH</h3><p>每次上线新功能都会经过开发完成，测试通过和运维发布这样一个过程，中间任何一个步骤出错这次发布就算失败，它们其实是一件事情：“成功发布上线”。</p>
+<p>redis的事务大概也就是上面的这个意思，一些redis命令组合在一起一次执行，它们是一体的。<br>redis的事务以multi这个特殊命令开始，以exec结束。</p>
+<p>redis事务的原理：设置一个标识告诉redis不要立即执行命令而是将它们存入一个队列，在特定时刻依次全部执行。</p>
+<p>第一步设置事务标识：multi</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">multiCommond</span><span class="params">(redisClient *c)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(c-&gt;flags &amp; REDIS_MULTI&#123;</span><br><span class="line">		<span class="comment">//出错</span></span><br><span class="line">		<span class="keyword">return</span>；</span><br><span class="line">	&#125;</span><br><span class="line">	c-&gt;flags |= REDIS_MULTI;  <span class="comment">//设置事务标识</span></span><br><span class="line">	<span class="comment">//.....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步将命令入队：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(redisClient *c)</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>(c-&gt;flags &amp; REDIS_MULTI &amp;&amp; c-&gt;cm-&gt;proc!=discardCommand </span><br><span class="line">		&amp;&amp; c-&gt;cm-&gt;proc!=execCommand </span><br><span class="line">		&amp;&amp; c-&gt;cm-&gt;proc!=multiCommand </span><br><span class="line">		&amp;&amp; c-&gt;cm-&gt;proc!=watchCommand)&#123;</span><br><span class="line">			queueMultiCommand(c);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="comment">//..........</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第二步中，其中有四个特殊命令无需入队，它们分别是discard，watch，exec，multi；后面我们会再说到discard和watch，至于exec和multi就不用多说啦。</p>
+<p>第三步执行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">execCommand</span><span class="params">(redisClient *c)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> j;</span><br><span class="line">	<span class="comment">//......</span></span><br><span class="line">	<span class="preprocessor">###执行队列中的命令</span></span><br><span class="line">	<span class="keyword">for</span>(j=<span class="number">0</span>;j&lt;c-&gt;mstate.count;j++)&#123;</span><br><span class="line">		c-&gt;argc = c-&gt;mstate.commands[j].argc;</span><br><span class="line">		c-&gt;argv = c-&gt;mstate.commands[j].argv;</span><br><span class="line">		c-&gt;cmd = c-&gt;mstate.commands[j].cmd;</span><br><span class="line">		</span><br><span class="line">		call(c); <span class="preprocessor">###执行命令</span></span><br><span class="line">		</span><br><span class="line">		c-&gt;mstate.commands[j].argc =c-&gt;argc ;</span><br><span class="line">		c-&gt;mstate.commands[j].argv = c-&gt;argv;</span><br><span class="line">		c-&gt;mstate.commands[j].cmd = c-&gt;cmd;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//.....</span></span><br><span class="line">	<span class="preprocessor">###释放队列</span></span><br><span class="line">	freeClientMultiState(c);</span><br><span class="line">	initClientMultiState(c);</span><br><span class="line">	</span><br><span class="line">	<span class="preprocessor">###去除事务标识</span></span><br><span class="line">	c-&gt;flag &amp; = ~(REDIS_MULTI | REIDS_DIRTY_CAS)</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过事务，redis可以延迟命令的执行减少链接次数提高效率，但在保持数据一致上还需要watch的配合，我们可以对一个或多个键值监视，一旦发生变化之后的事务执行就算失败。通过这种机制来保证数据的正确。discard可以来取消监视，在multi和exec命令之间执行会同时取消监视和事务。</p>
+<h3 id="虚拟内存VM">虚拟内存VM</h3><p>内存空间总会有用尽的可能，虚拟内存就是将redis的键(key)依然保存在内存但键对应的值(value)则从内存置换到磁盘，参数配置如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">vm-enabled yes               <span class="preprocessor">#开启VM</span></span><br><span class="line">vm-swap-file /tmp/redis.swap <span class="preprocessor">#value保存的文件路径</span></span><br><span class="line">vm-max-memory <span class="number">12345</span>          <span class="preprocessor">#redsi的内存上限，超过就将value置换到磁盘</span></span><br><span class="line">vm-page-size  <span class="number">32</span>             <span class="preprocessor">#设置每页大小<span class="number">32</span>字节</span></span><br><span class="line">vm-pages   <span class="number">100000</span>            <span class="preprocessor">#swap文件中使用多少页面</span></span><br><span class="line">vm-max-threads <span class="number">4</span>             <span class="preprocessor">#用于执行换出的工作线程数量， <span class="number">0</span>：不使用工作线程</span></span><br></pre></td></tr></table></figure>
+<h5 id="非阻塞式VM">非阻塞式VM</h5><p>未完待续。。。。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="事务与WATCH">事务与WATCH</h3><p>每次上线新功能都会经过开发完成，测试通过和运维发布这样一个过程，中间任何一个步骤出错这次发布就算失败，它们其实是一件事情：“成功发布上线”。</p>
+<p>redis的事务大概也就是上面的这个意思，一些redis]]>
+    </summary>
+    
+      <category term="事务  虚拟内存(VM) 非阻塞VM" scheme="http://www.flydream.org/tags/%E4%BA%8B%E5%8A%A1-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98-VM-%E9%9D%9E%E9%98%BB%E5%A1%9EVM/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[http 缓存]]></title>
@@ -207,7 +237,7 @@
     <link href="http://www.flydream.org/2015/10/26/php7-2/"/>
     <id>http://www.flydream.org/2015/10/26/php7-2/</id>
     <published>2015-10-25T22:27:08.000Z</published>
-    <updated>2016-02-22T23:39:50.000Z</updated>
+    <updated>2016-02-28T06:59:22.000Z</updated>
     <content type="html"><![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html</a> ）<br>本文的最开始部分，首先讨论变量值在PHP 5 和PHP 7内部实现上的明显变化。最主要的不同就是zvals不在会被独立分配和存储自身的引用计数。例如整数、浮点数这样的基本数据类型的值直接存储在其对应的zval中，而一些复杂的数据类型在zval存储指向另一个结构体的指针。</p>
 <p>对于刚才提到的复杂数据类型，它们有一个共同的header，即zend_refcounted:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_refcounted&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> refcount;</span><br><span class="line">	<span class="keyword">union</span>&#123;</span><br><span class="line">		<span class="keyword">struct</span>&#123;</span><br><span class="line">			ZEND_ENDIAN_LOHI_3(</span><br><span class="line">				zend_uchar type,</span><br><span class="line">				zend_uchar flags,</span><br><span class="line">				<span class="keyword">uint16_t</span>   gc_info)</span><br><span class="line">		&#125;v;</span><br><span class="line">		<span class="keyword">uint32_t</span> typeinfo;</span><br><span class="line">	&#125; u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -244,6 +274,41 @@
 <p>然而对于属性声明这里还有一个优化：在编译期间每个属性被定义为一个索引而对应的属性值通过索引被存储在properties_table中。属性名和它们对应的索引映射关系则存储在这个class entry的哈希表中。这样做的目的是为每个类的对象在申请内存。而且属性对应的索引也可以在运行中被缓存。</p>
 <p>guards用于实现魔术方法的递归如__get,这里不再深入。</p>
 <p>除了之前已经提到的双引用计数问题，对一个只有一个属性的对象它也要136字节的内存（还没包含zvals）。而且还有很对的间接寻址：例如，唯一获取一个对象的属性，你首先需要找到对象的store bucket，然后是zend object，在然后是属性表和zval。如此一来就已经是至少四层间接寻址（在实际中，这个过程不少于七）。</p>
+<h4 id="Objects_in_PHP_7">Objects in PHP 7</h4><p>PHP7尝试去解决前文提到的问题，它们分别是解决双引用计数，减少不必要的内存占用和减少间接寻址。新的zend_object结构体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_object&#123;</span><br><span class="line">	zend_refcounted gc;</span><br><span class="line">	<span class="keyword">uint32_t</span>        handle;</span><br><span class="line">	zend_class_entry *ce;</span><br><span class="line">	<span class="keyword">const</span> zend_object_handlers *handlers;</span><br><span class="line">	HashTable       *properties;</span><br><span class="line">	zval            properties_table[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的这个结构体是优化后的一个对象结构体：zend_object_value已经被一个直接指向对象的结构体替换同时object store结构虽然没有完全消失但也不再那么重要。</p>
+<p>去除包含一个zend_refcounted,你也会看到对象的handle和handlers也已经被移入zend_object。而且现在properties_table also makes use of the struct hack,所以zend_object和属性表可以被分配在同一个块中。当然，属性表也直接把zvals嵌入其中，而不再是包含指向zvals的指针。</p>
+<p>guards表在新的对象结构体中不再直接出现。取而代之是在需要的时候把它放入properties_table的第一个槽位，比如：对象使用了__get。但是如果没有使用这些魔术方法，guards表就是可以省略。</p>
+<p>dtor，free_storage和clone三个handlers之前存放在object store bucket中，现在也不移入了handlers表中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> _zend_object_handlers&#123;</span><br><span class="line">	<span class="comment">/* offset of real object header (usually zero) */</span></span><br><span class="line">   	<span class="keyword">int</span>                                     offset;</span><br><span class="line">  		<span class="comment">/* general object functions */</span></span><br><span class="line">   	<span class="keyword">zend_object_free_obj_t</span>                  free_obj;</span><br><span class="line">   	<span class="keyword">zend_object_dtor_obj_t</span>                  dtor_obj;</span><br><span class="line">   	<span class="keyword">zend_object_clone_obj_t</span>                 clone_obj;</span><br><span class="line">   	<span class="comment">/* individual object functions */</span></span><br><span class="line">  		 <span class="comment">// ... rest is about the same in PHP 5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的结构体顶部是一个表示offset成员变量，它很明显不是一个句柄。offset与对象的内部表现有关：内部的对象会嵌入标准的zend_object,但也会增加一些额外的成员变量。在PHP5中的它的形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> custom_object&#123;</span><br><span class="line">	zend_object <span class="built_in">std</span>;</span><br><span class="line">	<span class="keyword">uint32_t</span> something;</span><br><span class="line">	<span class="comment">// ....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述结构体中成员变量的安排就代表着zend_object *可以扮演者结构体custom_object的角色。这是C中标准的结构体继承。但是在PHP 7中这种实现伴随着一个问题：因为zend_object使用struct hack来存储属性表，所以PHP会在zend_object中存储属性值，而这样可能会覆盖custom_object中其它的成员变量值。这也是为什么在PHP7中额外的成员变量定义在zend_object之前的原因：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">struct</span> custom_object&#123;</span><br><span class="line">	<span class="keyword">uint32_t</span> something;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">	zend_object <span class="built_in">std</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然而上述结构也意味着由于zend_object<em> 和 custom_object </em>被一个offset分隔开，它们之间无法再接着转换。这个offset就是_zend_object_handlers中的第一个成员变量。在编译时这个offset由offsetof宏来具体实现。</p>
+<p>你或许会疑问为什么PHP 7的对象(_zend_object)依然包含一个handle。毕竟，我们现在都会直接保存指向zend_object的指针，我们不在需要handle去object store中去查找定位一个对象。</p>
+<p>但是这个handle还是需要的，原因就是object store虽然现在体形变小了但依然存在着。handle现在只是保存着对象指针的数组的索引。当创建一个新对象，指向这个对象的指针就会被写入object sotre中并通过handle来定位一旦对象释放对应的handle就移除。</p>
+<p>为什么我们还需要object store？原因就是在生命周期的request shutdown期间，由于这个executor已经部分关闭会导致再运行用户的代码会不安全。为了避免这个问题PHP需要在一个更早的时间点去析构所有的对象来阻止用户代码的运行。所以我们需要一个当前所有对象的列表。</p>
+<p>而且这个handle在调试时也有使用到，因为它是每个对象的唯一标识，通过它可以很容易识别两个对象是真的相同还是只是内容一致。HHVM虽然没有object store的概念但也保存着这个handle。</p>
+<p>相比PHP 5的实现，我们现在仅有一个引用计数以及更小的内存占用：我们现在一个基本对象需要40个字节和属性申明占用16个字节，这其中已经包含它的zval结构。随着中间结构体或者被丢弃或者被内嵌，间接寻址的次数已经明显减少。因此现在一次属性的读取只要能够一个间接寻址而不再是4次。</p>
+<h4 id="Indirect_zval">Indirect zval</h4><p>在这里我们涉及到zval的所有基本类型，以及一些在特定情况下出现的一些特殊类型。一个是PHP 7 中新增的IS_INDIRECT.</p>
+<p>indirect zval意味着它的值存储在其它的zval中。特别注意的与IS_REFERENCE类型不同，它直接指向另外一个zval，而不是指向一个嵌入了zval的zend_reference结构。</p>
+<p>通过思考PHP变量的实现(对象属性的存储)，我们要去理解什么样的特殊情形下会需要这么做：</p>
+<p>在编译时会生符号表(CV)，所有的变量的值都会被存入符号表中通过对应的变量名对应的索引来在符号表中定位每个变量对应的值。然而PHP是允许我们动态的引用变量的，假如想在全局范围内引用变量，也可以通过$GLOBALS。如果这种情况发生，PHP会为函数/脚本创建一个符号表，在这个符号表中保存着变量名和对应值的映射。</p>
+<p>这也带来一个问题：如何同时支持两种处理方式？对于普通的变量获取，我们需要基本的符号表同时系统符号表来处理变量的复制引用。在PHP 5中，符号表(CV)采用了二级zval <em>*指针的方式。它们指向包含了一级zval </em>指针（指向真正的zval）的二级表。</p>
+<p>+—— CV_ptr_ptr[0]<br>| +—- CV_ptr_ptr[1]<br>| | +– CV_ptr_ptr[2]<br>| | |<br>| | +-&gt; CV_ptr[0] –&gt; some zval<br>| +—&gt; CV_ptr[1] –&gt; some zval<br>+—–&gt; CV_ptr[2] –&gt; some zval</p>
+<p>现在，自从系统符号表的使用，包含着zval <em>指针的二级表就不在使用了同时zval *</em> 指向哈希表的buckets。下面通过实例来说明一下，分别定义了三个变量$a,$b,$c:</p>
+<p>CV_ptr_ptr[0] –&gt; SymbolTable[“a”].pDataPtr –&gt; some zval<br>CV_ptr_ptr[1] –&gt; SymbolTable[“b”].pDataPtr –&gt; some zval<br>CV_ptr_ptr[2] –&gt; SymbolTable[“c”].pDataPtr –&gt; some zval</p>
+<p>在PHP 7中这种方式不再可行，原因就是哈希表已经被重新设计过，此时指向bucket的指针已经无效。在原来策略不再可行的时，PHP 7采用来完全相反的策略：系统符号表中包含一个INDIRECT实体，它指向CV实体。CV表在整个系统符号表的生命周期里都不会再重新分配。</p>
+<p>现在你在一个函数中创建了变量$a,$b和$c,而且还动态地创建了$d,系统符号表会看起来像下面这个样子：</p>
+<p>SymbolTable[“a”].value = INDIRECT –&gt; CV[0] = LONG 42<br>SymbolTable[“b”].value = INDIRECT –&gt; CV[1] = DOUBLE 42.0<br>SymbolTable[“c”].value = INDIRECT –&gt; CV[2] = STRING –&gt; zend_string(“42”)<br>SymbolTable[“d”].value = ARRAY –&gt; zend_array([4, 2])</p>
+<p>Indirect zvals也可以指向一个IS_UNDEF类型的zval，这种情况等效于哈希表中没有对应的键。同样unset($a)操作会将CV[0]赋值为UNDEF，这和哈希表中没有对应的键值是等效的。</p>
+<h5 id="Constants_和_ASTs">Constants 和 ASTs</h5><p>在PHP 5和7中还有两个特别的类型值得一说，它们是IS_CONSTANT和IS_CONSTANT_AST。思考一个实例，来理解究竟发生了什么：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">(<span class="variable">$a</span> = ANSWER,<span class="variable">$b</span>=ANSWER+ANSWER)</span></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$a</span>+<span class="variable">$b</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">define(<span class="string">'ANSWER'</span>,<span class="number">42</span>);</span><br><span class="line">var_dump(test()); <span class="comment">//int(42 + 42 * 42)</span></span><br></pre></td></tr></table></figure>
+<p>test函数的参数默认值是常量ANSWER，然而常量定义在在函数定义之后。常量只有在define()之后才可用。</p>
+<p>之所以可以运行的原因就是“static expression”，它可以在首次真正使用时才评估表达式，而参数，属性默认值，常量等等都支持“static expression”。</p>
+<p>如果值是一个常量（类常量），这个是一个IS_CONSTANT类型的zval。如果值是一个表达式，这个zval是IS_CONSTANT_AST类型的并指向一个抽象语法树。</p>
+<p>总结一下我们对PHP 7 value的表述。我想要表述的是两个主题：在虚拟机方面的优化尤其是新的调用机制和在编译上的改进。</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>【原文链接】（<a href="http://nikic.github.io/2015/06/19/Internal-value-representation-in-PHP-7-part-2.html" target="_blank" rel="external">http]]>
@@ -688,28 +753,6 @@
     </summary>
     
       <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <link href="http://www.flydream.org/2015/08/03/hello-world/"/>
-    <id>http://www.flydream.org/2015/08/03/hello-world/</id>
-    <published>2015-08-03T15:13:03.000Z</published>
-    <updated>2015-08-03T15:13:03.000Z</updated>
-    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
-    </summary>
     
   </entry>
   
