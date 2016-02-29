@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-29T11:51:26.000Z</updated>
+  <updated>2016-02-29T23:47:10.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://www.flydream.org/2016/02/28/about-redis/"/>
     <id>http://www.flydream.org/2016/02/28/about-redis/</id>
     <published>2016-02-28T00:17:40.000Z</published>
-    <updated>2016-02-29T11:51:26.000Z</updated>
+    <updated>2016-02-29T23:47:10.000Z</updated>
     <content type="html"><![CDATA[<h3 id="事务与WATCH">事务与WATCH</h3><p>每次上线新功能都会经过开发完成，测试通过和运维发布这样一个过程，中间任何一个步骤出错这次发布就算失败，它们其实是一件事情：“成功发布上线”。</p>
 <p>redis的事务大概也就是上面的这个意思，一些redis命令组合在一起一次执行，它们是一体的。<br>redis的事务以multi这个特殊命令开始，以exec结束。</p>
 <p>redis事务的原理：设置一个标识告诉redis不要立即执行命令而是将它们存入一个队列，在特定时刻依次全部执行。</p>
@@ -37,6 +37,7 @@
 <p>I/O任务对象的结构体：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> iojob&#123;</span><br><span class="line">	<span class="keyword">int</span> type;    <span class="preprocessor">### 任务类型（</span></span><br><span class="line">	redisDb *db; <span class="preprocessor">### 数据库</span></span><br><span class="line">	robj *key；  <span class="preprocessor">### 键值</span></span><br><span class="line">	.........</span><br><span class="line">	<span class="keyword">off_t</span> page;  <span class="preprocessor">### 对象所在的页</span></span><br><span class="line">	<span class="keyword">off_t</span> pages; <span class="preprocessor">### 对象占用了多少页</span></span><br><span class="line">	<span class="keyword">int</span> canceled; <span class="preprocessor">### 任务是否取消</span></span><br><span class="line">	<span class="keyword">pthread_t</span> thread; <span class="preprocessor">### 线程ID</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其中iojob的type值：REDIS_IOJOB_LOAD：从swap加载到内存； REDIS_IOJOB_PREPARE_SWAP 计算从保存到swap需要多少页 REDIS_IOJOB_DO_SWAP：将值置换到swap。</p>
+<p>参考文献：《Redis IN ACTIOIN》 《php核心技术与最佳实践》</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h3 id="事务与WATCH">事务与WATCH</h3><p>每次上线新功能都会经过开发完成，测试通过和运维发布这样一个过程，中间任何一个步骤出错这次发布就算失败，它们其实是一件事情：“成功发布上线”。</p>
@@ -52,7 +53,7 @@
     <link href="http://www.flydream.org/2016/02/13/http-cache/"/>
     <id>http://www.flydream.org/2016/02/13/http-cache/</id>
     <published>2016-02-13T07:36:40.000Z</published>
-    <updated>2016-02-22T23:50:20.000Z</updated>
+    <updated>2016-02-29T23:48:07.000Z</updated>
     <content type="html"><![CDATA[<p>HTTP协议缓存的目标是去除许多情况下对于发送请求的需求和去除许多情况下发送完整请求的需求。以不发送请求或减少请求传输的数据量来优化整个HTTP架构，此目标的实现可以产生如下好处：</p>
 <ul>
 <li>减少网络传输的冗余信息量</li>
@@ -73,7 +74,7 @@
 </li>
 <li>If-None-Match字段 – 服务器可以为文档提供特殊的标签（ETag），如果此标签与服务器的标签不一样，就会执行请求的方法。<br>如果服务器应答中包括一个ETag，又包括一个Last-Mofidied值，则客户端在发送请求时使用两种证实机制，并且只有当两种证实机制都满足时才会返回304 Not Modified。</li>
 </ul>
-<p>缓存在新鲜度检测时，只需要计算两个值：已缓存副本的使用期和已缓存副本的新鲜生存期。</p>
+<p>参看文献：《http权威指南》</p>
 ]]></content>
     <summary type="html">
     <![CDATA[<p>HTTP协议缓存的目标是去除许多情况下对于发送请求的需求和去除许多情况下发送完整请求的需求。以不发送请求或减少请求传输的数据量来优化整个HTTP架构，此目标的实现可以产生如下好处：</p>
