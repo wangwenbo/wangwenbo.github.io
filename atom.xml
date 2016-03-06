@@ -4,7 +4,7 @@
   
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.flydream.org/"/>
-  <updated>2016-02-29T23:47:10.000Z</updated>
+  <updated>2016-03-06T23:52:54.000Z</updated>
   <id>http://www.flydream.org/</id>
   
   <author>
@@ -13,6 +13,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[初识nginx模块]]></title>
+    <link href="http://www.flydream.org/2016/03/06/about-nginx-module/"/>
+    <id>http://www.flydream.org/2016/03/06/about-nginx-module/</id>
+    <published>2016-03-06T15:14:36.000Z</published>
+    <updated>2016-03-06T23:52:54.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="nginx的配置结构">nginx的配置结构</h3><p>nginx的核心是配置也就是nginx.conf的文件，nginx的配置大致可以分为如下几类：events，<br>http，server，location等几类配置块，而且http中可以嵌套server，location；除此之外，具体的配置内容会涉及内存、磁盘分配，mime类型，虚拟主机和请求分发等内容，就不再详细列举啦，可以阅读一下《Nginx模块开发与架构解析》的第二章内容。实例：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> &#10;#user  nobody;&#10;worker_processes  1;   &#10;&#10;#error_log  logs/error.log;         &#10;#error_log  logs/error.log  notice;  //logs/error.log:&#38169;&#35823;&#26085;&#24535;&#36335;&#24452; notice:&#38169;&#35823;&#31867;&#22411;&#10;#error_log  logs/error.log  info;&#10;&#10;#pid        logs/nginx.pid;   //master&#36827;&#31243;&#25991;&#20214;&#10;&#10;&#10;events &#123;&#10;   &#9;worker_connections  1024;&#10;&#125;&#10;&#10;&#10;http &#123;&#10;   &#9;include       mime.types;&#10;   &#9;default_type  application/octet-stream;&#10;&#10;   &#9;sendfile        on;&#10;   &#9;#tcp_nopush     on;&#10;&#10;   &#9;#keepalive_timeout  0;&#10;   &#9;keepalive_timeout  65;&#10;&#10;   &#9;#gzip  on;&#10;&#10;   server &#123;&#10;       listen       80;&#10;       server_name  localhost;&#10;&#10;       #charset koi8-r;&#10;&#10;       #access_log  logs/host.access.log  main;&#10;&#10;       location / &#123;&#10;           root   html;&#10;           index  index.html index.htm;&#10;       &#125;&#10;&#10;       #error_page  404              /404.html;&#10;&#10;       # redirect server error pages to the static page /50x.html&#10;       #&#10;       error_page   500 502 503 504  /50x.html;&#10;       location = /50x.html &#123;&#10;           root   html;&#10;       &#125;&#10;&#10;   &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="nginx模块的工作原理">nginx模块的工作原理</h3><p>针对http模块，nginx在接到一个http请求后，它会查找配置文件映射到对应的location块，然后根据location中配置的指令去启动不同的模块，再详细的的说这些模块中一个是handler模块和多个filter模块。handler模块负责处理和生成响应内容，filter模块负责过滤响应内容，就提的流程图：(此流程图来自：<a href="http://blog.codinglabs.org/articles/intro-of-nginx-module-development.html" target="_blank" rel="external">http://blog.codinglabs.org/articles/intro-of-nginx-module-development.html</a>)<br><img src="http://wangwenbo.github.io/image/nginx1.png" alt="nginx1 png"></p>
+<h3 id="我们自己的http模块">我们自己的http模块</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;location /wwb&#123;&#10;&#9;echo &#34;this response is from wwb module&#34;;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>一个http模块的功能实现需要：<br>1.读入配置文件中的指令<br>2.http包装<br>3.响应结果</p>
+<h4 id="模块配置结构体">模块配置结构体</h4><p>ngnix模块配置结构的命名规则ngx<em>http</em>[module-name]_[main|srv|loc]_conf_t, 其中main，server，location分别代表不同的配置块和层级，具体到这里我们的配置结构体命名为：ngx_http_wwb_loc_conf_t:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">typdef <span class="keyword">struct</span>&#123;</span><br><span class="line">	<span class="keyword">ngx_str_t</span> ed;</span><br><span class="line">&#125; <span class="keyword">ngx_http_wwb_loc_conf_t</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="指令">指令</h4><h4 id="合并配置">合并配置</h4><h4 id="handler">handler</h4><h4 id="完成一个nginx模块">完成一个nginx模块</h4>]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="nginx的配置结构">nginx的配置结构</h3><p>nginx的核心是配置也就是nginx.conf的文件，nginx的配置大致可以分为如下几类：events，<br>http，server，location等几类配置块，而且http中可以嵌套server]]>
+    </summary>
+    
+      <category term="配置nginx.conf" scheme="http://www.flydream.org/tags/%E9%85%8D%E7%BD%AEnginx-conf/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[初识redis]]></title>
@@ -731,32 +753,6 @@
     </summary>
     
       <category term="PHP内核 变量 作用域 生命周期" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F-%E4%BD%9C%E7%94%A8%E5%9F%9F-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[PHP 内核学习 -- 变量的结构和类型]]></title>
-    <link href="http://www.flydream.org/2015/08/08/variableAnalysie/"/>
-    <id>http://www.flydream.org/2015/08/08/variableAnalysie/</id>
-    <published>2015-08-07T22:36:05.000Z</published>
-    <updated>2016-02-21T13:02:01.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="弱变量_ZVAL"><strong>弱变量</strong>  <strong>ZVAL</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
-<h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变量存储结构ZVAL(Zend/zend.h)如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">   <span class="keyword">struct</span> _zval_struct&#123;</span><br><span class="line">	<span class="comment">/*变量信息*/</span></span><br><span class="line">	zvalue_value value; <span class="comment">/*存储变量的值*/</span></span><br><span class="line">	zend_uint refcount__gc; <span class="comment">/*引用次数*/</span></span><br><span class="line">	zend_uchar type     <span class="comment">/*变量的类型*/</span></span><br><span class="line">	zend_uchar is_ref__gc;  <span class="comment">/*是否引用*/</span></span><br><span class="line">&#125;zval;</span><br></pre></td></tr></table></figure>
-<p>其中zval中type的作用就是用来标示不同的类型，它的值可以为：IS_LONG,IS_DOUBLE,IS_STRING,IS_BOOL，IS_ARRAY,IS_OBJECT，IS_RESOURCE,IS_NULL    。</p>
-<h4 id="2-变量的值">2.变量的值</h4><p>之前提到的zval中的成员变量value（zvalue_value)就是变量值实际存储的地方，zvalue_value 的结果如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> _zvalue_value&#123;</span><br><span class="line">	<span class="keyword">long</span> lval;</span><br><span class="line">	<span class="keyword">double</span> dval;</span><br><span class="line">	<span class="keyword">struct</span>&#123;</span><br><span class="line">		<span class="keyword">char</span> *val;</span><br><span class="line">		<span class="keyword">int</span> len;</span><br><span class="line">	&#125; str;         <span class="comment">/*字符串*/</span></span><br><span class="line">	HashTable *ht;    <span class="comment">/*数组*/</span></span><br><span class="line">	zend_object_value obj;  <span class="comment">/*对象*/</span></span><br><span class="line">	zend_ast *ast;    <span class="comment">/*抽象语法树*/</span></span><br><span class="line">&#125;zvalue_value;</span><br></pre></td></tr></table></figure>
-<p>由于一个变量只能是一种类型,所以变量实际存储的结构zvalue_value,采用联合体的结构，这样可以避免浪费大量内存。<br>zvalue_value 中各个成员负责存储不同的变量，整型和布尔值在存储在zvalue_value.lval；dval存储浮点数； str存储字符串；ht 负责存储数组； obj和ast分别存储对象和语法树。</p>
-<h4 id="-array（数组）">.array（数组）</h4><p>数组在PHP是一种很强大的变量，因为PHP为数组提供了丰富的内置函数，同时还可以存储其它类型的变量。PHP数组的强大依赖于哈希表，一种高效的键值对存储结构。在PHP中，处处可见哈希表的存在，从环境变量(symbol_table)、用户自定义的类和函数(active_symbol_table)和函数表(active_table)和对象等。</p>
-<h4 id="Object（对象）">Object（对象）</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _zend_object_value&#123;</span><br><span class="line">	zend_object_handle handle;  <span class="comment">//对象在对象池中的索引</span></span><br><span class="line">	zend_object_handlers *handlers;  <span class="comment">//处理对象的函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>EG宏，一个全局结构体用于保存在运行时的数据。 PHP的对象只有在运行时才会被创建，其中就包括了用来保存所有被创建的对象的对象池EG(objects_store)，而handle域就是当前对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。 这个结构体及对象相关的类的结构_zend_class_entry。</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h3 id="弱变量_ZVAL"><strong>弱变量</strong>  <strong>ZVAL</strong></h3><p>PHP是解释性语言，同时也是拥有弱变量类型的语言.</p>
-<h4 id="1-变量的存储结构">1.变量的存储结构</h4><p>PHP的变]]>
-    </summary>
-    
-      <category term="PHP内核 变量" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F/"/>
     
   </entry>
   
