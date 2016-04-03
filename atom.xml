@@ -73,7 +73,7 @@
 <p>redis的事务大概也就是上面的这个意思，一些redis]]>
     </summary>
     
-      <category term="事务  虚拟内存(VM) 非阻塞VM" scheme="http://www.flydream.org/tags/%E4%BA%8B%E5%8A%A1-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98-VM-%E9%9D%9E%E9%98%BB%E5%A1%9EVM/"/>
+      <category term="事务  虚拟内存(VM) 非阻塞VM" scheme="http://www.flydream.org/tags/%E4%BA%8B%E5%8A%A1-%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98-vm-%E9%9D%9E%E9%98%BB%E5%A1%9Evm/"/>
     
   </entry>
   
@@ -491,7 +491,7 @@
     <![CDATA[<h3 id="PHP_字符串函数（strstr,stristr,strpos,substr）">PHP 字符串函数（strstr,stristr,strpos,substr）</h3><h4 id="1-_strstr,stristr,strpos,">1. strstr,st]]>
     </summary>
     
-      <category term="PHP strstr,stristr,substr" scheme="http://www.flydream.org/tags/PHP-strstr-stristr-substr/"/>
+      <category term="PHP strstr,stristr,substr" scheme="http://www.flydream.org/tags/php-strstr-stristr-substr/"/>
     
   </entry>
   
@@ -726,7 +726,7 @@
     <![CDATA[<h3 id="PHP7_变量的内核实现_-Part_1">PHP7 变量的内核实现 -Part 1</h3><p>【原文链接】（<a href="http://nikic.github.io/2015/05/05/Internal-value-representation-in]]>
     </summary>
     
-      <category term="PHP7 ZVAL" scheme="http://www.flydream.org/tags/PHP7-ZVAL/"/>
+      <category term="PHP7 ZVAL" scheme="http://www.flydream.org/tags/php7-zval/"/>
     
   </entry>
   
@@ -759,7 +759,7 @@
 <h4 id="全局变量和局部]]>
     </summary>
     
-      <category term="PHP内核 变量 作用域 生命周期" scheme="http://www.flydream.org/tags/PHP%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F-%E4%BD%9C%E7%94%A8%E5%9F%9F-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
+      <category term="PHP内核 变量 作用域 生命周期" scheme="http://www.flydream.org/tags/php%E5%86%85%E6%A0%B8-%E5%8F%98%E9%87%8F-%E4%BD%9C%E7%94%A8%E5%9F%9F-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
     
   </entry>
   
